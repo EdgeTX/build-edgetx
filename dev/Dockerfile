@@ -20,7 +20,7 @@ RUN apt-get install --yes -qq \
 RUN apt-get install --yes python3-pip && \
         python3 -m pip install pillow clang
 
-RUN apt-get install --yes wget && \
+RUN apt-get install --yes wget zip unzip && \
         wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2 -O - \
         | tar -xj -C /opt
 

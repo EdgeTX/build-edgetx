@@ -25,3 +25,7 @@ The `opentx-dev` image is meant to be run in full, so you can if the commit test
 ```
 % docker run -it --rm -v /Users/rco/Src/taranis/opentx:/src opentx-commit-tests
 ```
+
+## Docker hub repository
+
+The dev image is also hosted at Docker hub for your convenience.

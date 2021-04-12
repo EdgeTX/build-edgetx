@@ -30,7 +30,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: Build and Push
+        name: Build and Push opentx-dev
         uses: docker/build-push-action@v2
         with:
           context: dev/
@@ -41,4 +41,16 @@ jobs:
             pafleraf/opentx-dev:2.4
             ghcr.io/raphaelcoeffic/opentx-dev:latest
             ghcr.io/raphaelcoeffic/opentx-dev:2.4
+      -
+        name: Build and Push opentx-commit-tests
+        uses: docker/build-push-action@v2
+        with:
+          context: commit-tests/
+          file: commit-tests/Dockerfile
+          push: true
+          tags: |
+            pafleraf/opentx-commit-tests:latest
+            pafleraf/opentx-commit-tests:2.4
+            ghcr.io/raphaelcoeffic/opentx-commit-tests:latest
+            ghcr.io/raphaelcoeffic/opentx-commit-tests:2.4
           

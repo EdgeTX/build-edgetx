@@ -23,11 +23,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
+        name: Login to GitHub Container Registry
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
         name: Build and Push
         uses: docker/build-push-action@v2
         with:
           context: dev/
           file: dev/Dockerfile
           push: true
-          tags: pafleraf/opentx-dev:latest
+          tags: |
+            pafleraf/opentx-dev:latest
+            pafleraf/opentx-dev:2.4
+            ghcr.io/raphaelcoeffic/opentx-dev:latest
+            ghcr.io/raphaelcoeffic/opentx-dev:2.4
           

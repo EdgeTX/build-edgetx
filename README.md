@@ -1,5 +1,7 @@
 # Docker images to build OpenTX 2.4
 
+[![Docker Image CI](https://github.com/raphaelcoeffic/build-opentx/actions/workflows/docker-image.yml/badge.svg)](https://github.com/raphaelcoeffic/build-opentx/actions/workflows/docker-image.yml)
+
 ## How to use
 
 In order to build each image, just `cd` into the directory and execute `make`:

@@ -23,10 +23,16 @@ Then you can just do whatever you need to do with your OpenTX source tree (compi
 
 ### opentx-commit-tests
 
-The `opentx-dev` image is meant to be run in full, so you can if the commit tests on Travis would likely pass on github:
+The `opentx-dev` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
 ```
-% docker run -it --rm -v /Users/rco/Src/taranis/opentx:/src opentx-commit-tests
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD opentx-commit-tests
 ```
+
+You can however run them all by using (beware, this is going to be a very long run):
+```
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL opentx-commit-tests
+```
+
 
 ## Docker repositories
 

@@ -31,3 +31,7 @@ ENV PATH=/opt/gcc-arm-none-eabi-6-2017-q2-update/bin/:${PATH}
 RUN strip --remove-section=.note.ABI-tag /opt/qt511/lib/libQt5Core.so.5.11.3
 
 VOLUME ["/src"]
+
+COPY entrypoint.sh /opt
+
+ENTRYPOINT ["/opt/entrypoint.sh"]

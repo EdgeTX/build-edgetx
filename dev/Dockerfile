@@ -3,6 +3,7 @@ FROM ubuntu:bionic
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -qq && \
+        add-apt-repository ppa:git-core/ppa --yes && \
         apt-get install --yes \
         software-properties-common \
         build-essential cmake git \

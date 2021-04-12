@@ -1,7 +1,13 @@
 FROM ghcr.io/raphaelcoeffic/opentx-dev
 
-COPY tests.sh /
-RUN chmod +x tests.sh
+ENV ASAN_OPTIONS=detect_leaks=0
 
-WORKDIR /
-CMD ./tests.sh
+#
+# Set the variables manually as Github Actions are overloading the entrypoint
+#
+ENV LD_LIBRARY_PATH=/opt/${QT_BASE}/lib/x86_64-linux-gnu:/opt/${QT_BASE}/lib
+ENV PATH=/opt/${QT_BASE}/bin:${PATH}
+ENV PKG_CONFIG_PATH=/opt/${QT_BASE}/lib/pkgconfig
+
+WORKDIR /src
+CMD /src/tools/commit-tests.sh

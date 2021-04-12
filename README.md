@@ -26,6 +26,18 @@ The `opentx-dev` image is meant to be run in full, so you can if the commit test
 % docker run -it --rm -v /Users/rco/Src/taranis/opentx:/src opentx-commit-tests
 ```
 
-## Docker hub repository
+## Docker repositories
 
-The dev image is also hosted at Docker hub for your convenience.
+The `opentx-dev` and `opentx-commit-tests` image are hosted at Docker hub & Github Container Repository for your convenience.
+
+Pulling from Docker hub is as simple as:
+```
+% docker pull pafleraf/opentx-dev
+% docker pull pafleraf/opentx-commit-tests
+```
+
+Pulling from Github Container Repository uses a slightly longer command:
+```
+% docker pull ghcr.io/raphaelcoeffic/opentx-dev
+% docker pull ghcr.io/raphaelcoeffic/opentx-commit-tests
+```

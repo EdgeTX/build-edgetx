@@ -22,7 +22,7 @@ RUN apt-get install --yes -qq \
         /opt/qt${QT_BASE}/bin/qt${QT_BASE}-env.sh
 
 RUN apt-get install --yes && \
-        python3 -m pip install pillow clang
+        python3 -m pip install pillow==7.2.0 clang
 
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2 -O - \
         | tar -xj -C /opt

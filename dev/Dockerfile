@@ -23,6 +23,7 @@ RUN apt-get install --yes -qq \
 
 RUN apt-get install --yes && \
         python3 -m pip install \
+        asciitree jinja2 \
         pillow==7.2.0 \
         clang==6.0.0
 

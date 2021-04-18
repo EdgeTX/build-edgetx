@@ -6,7 +6,7 @@ RUN apt-get update -qq && \
         apt-get install --yes \
         software-properties-common \
         build-essential cmake \
-        libfox-1.6-dev clang-10
+        libfox-1.6-dev libclang-6.0-dev
 
 RUN add-apt-repository ppa:beineri/opt-qt-5.11.3-bionic --yes && \
         add-apt-repository ppa:git-core/ppa --yes && \
@@ -22,7 +22,9 @@ RUN apt-get install --yes -qq \
         /opt/qt${QT_BASE}/bin/qt${QT_BASE}-env.sh
 
 RUN apt-get install --yes && \
-        python3 -m pip install pillow==7.2.0 clang
+        python3 -m pip install \
+        pillow==7.2.0 \
+        clang==6.0.0
 
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2 -O - \
         | tar -xj -C /opt

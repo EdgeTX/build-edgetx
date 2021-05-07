@@ -15,7 +15,7 @@ In order to build each image, just `cd` into the directory and execute `make`:
 The `edgetx-dev` image is meant to be used in interactive mode:
 ```
 % cd ~/src/edgetx
-% docker run -it --rm -v $(pwd):/src ghcr.io/EdgeTX/edgetx-dev bash
+% docker run -it --rm -v $(pwd):/src ghcr.io/edgetx/edgetx-dev bash
 root@02157a542d21:/# cd /src
 ```
 
@@ -25,12 +25,12 @@ Then you can just do whatever you need to do with your EdgeTX source tree (compi
 
 The `edgetx-dev` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
 ```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD ghcr.io/EdgeTX/edgetx-commit-tests
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD ghcr.io/edgetx/edgetx-commit-tests
 ```
 
 You can however run them all by using (beware, this is going to be a very long run):
 ```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL ghcr.io/EdgeTX/edgetx-commit-tests
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL ghcr.io/edgetx/edgetx-commit-tests
 ```
 
 
@@ -40,6 +40,6 @@ The `edgetx-dev` and `edgetx-commit-tests` image are hosted at Docker hub & Gith
 
 Pulling from Github Container Repository with this command:
 ```
-% docker pull ghcr.io/EdgeTX/edgetx-dev
-% docker pull ghcr.io/EdgeTX/edgetx-commit-tests
+% docker pull ghcr.io/edgetx/edgetx-dev
+% docker pull ghcr.io/edgetx/edgetx-commit-tests
 ```

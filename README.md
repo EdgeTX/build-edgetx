@@ -1,6 +1,6 @@
-# Docker images to build OpenTX 2.4
+# Docker images to build EdgeTX 2.4
 
-[![Docker Image CI](https://github.com/raphaelcoeffic/build-opentx/actions/workflows/docker-image.yml/badge.svg)](https://github.com/raphaelcoeffic/build-opentx/actions/workflows/docker-image.yml)
+[![Docker Image CI](https://github.com/EdgeTX/build-edgetx/actions/workflows/docker-image.yml/badge.svg)](https://github.com/EdgeTX/build-edgetx/actions/workflows/docker-image.yml)
 
 ## How to use
 
@@ -10,42 +10,36 @@ In order to build each image, just `cd` into the directory and execute `make`:
 % cd commit-tests && make
 ```
 
-### opentx-dev
+### edgetx-dev
 
-The `opentx-dev` image is meant to be used in interactive mode:
+The `edgetx-dev` image is meant to be used in interactive mode:
 ```
-% cd ~/src/opentx
-% docker run -it --rm -v $(pwd):/src opentx-dev bash
+% cd ~/src/edgetx
+% docker run -it --rm -v $(pwd):/src ghcr.io/EdgeTX/edgetx-dev bash
 root@02157a542d21:/# cd /src
 ```
 
-Then you can just do whatever you need to do with your OpenTX source tree (compile, test, whatever).
+Then you can just do whatever you need to do with your EdgeTX source tree (compile, test, whatever).
 
-### opentx-commit-tests
+### edgetx-commit-tests
 
-The `opentx-dev` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
+The `edgetx-dev` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
 ```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD opentx-commit-tests
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD ghcr.io/EdgeTX/edgetx-commit-tests
 ```
 
 You can however run them all by using (beware, this is going to be a very long run):
 ```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL opentx-commit-tests
+% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL ghcr.io/EdgeTX/edgetx-commit-tests
 ```
 
 
 ## Docker repositories
 
-The `opentx-dev` and `opentx-commit-tests` image are hosted at Docker hub & Github Container Repository for your convenience.
+The `edgetx-dev` and `edgetx-commit-tests` image are hosted at Docker hub & Github Container Repository for your convenience.
 
-Pulling from Docker hub is as simple as:
+Pulling from Github Container Repository with this command:
 ```
-% docker pull pafleraf/opentx-dev
-% docker pull pafleraf/opentx-commit-tests
-```
-
-Pulling from Github Container Repository uses a slightly longer command:
-```
-% docker pull ghcr.io/raphaelcoeffic/opentx-dev
-% docker pull ghcr.io/raphaelcoeffic/opentx-commit-tests
+% docker pull ghcr.io/EdgeTX/edgetx-dev
+% docker pull ghcr.io/EdgeTX/edgetx-commit-tests
 ```

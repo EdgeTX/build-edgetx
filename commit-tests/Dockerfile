@@ -1,4 +1,4 @@
-FROM ghcr.io/raphaelcoeffic/opentx-dev
+FROM ghcr.io/edgetx/edgetx-dev
 
 ENV ASAN_OPTIONS=detect_leaks=0
 

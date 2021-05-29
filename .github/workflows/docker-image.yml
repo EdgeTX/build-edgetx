@@ -37,8 +37,7 @@ jobs:
           file: dev/Dockerfile
           push: true
           tags: |
-            ghcr.io/edgetx/edgetx-dev:latest
-            ghcr.io/edgetx/edgetx-dev:2.4
+            ghcr.io/edgetx/edgetx-dev:2.4-gcc10
       -
         name: Build and Push edgetx-commit-tests
         uses: docker/build-push-action@v2
@@ -47,6 +46,5 @@ jobs:
           file: commit-tests/Dockerfile
           push: true
           tags: |
-            ghcr.io/edgetx/edgetx-commit-tests:latest
-            ghcr.io/edgetx/edgetx-commit-tests:2.4
+            ghcr.io/edgetx/edgetx-commit-tests:2.4-gcc10
           

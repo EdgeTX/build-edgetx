@@ -23,7 +23,7 @@ Then you can just do whatever you need to do with your EdgeTX source tree (compi
 
 ### edgetx-commit-tests
 
-The `edgetx-dev` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
+The `edgetx-commit-tests` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
 ```
 % docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD ghcr.io/edgetx/edgetx-commit-tests
 ```

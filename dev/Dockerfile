@@ -5,8 +5,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq && \
         apt-get install --yes \
         software-properties-common \
-        build-essential cmake \
+        build-essential gpg wget \
         libfox-1.6-dev libclang-6.0-dev
+
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
+        gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
+        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | \
+        tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
+        apt-get update -qq && apt-get install --yes cmake
 
 RUN add-apt-repository ppa:beineri/opt-qt-5.11.3-bionic --yes && \
         add-apt-repository ppa:git-core/ppa --yes && \

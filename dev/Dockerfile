@@ -6,7 +6,7 @@ RUN apt-get update -qq && \
         apt-get install --yes \
         software-properties-common \
         build-essential gpg wget \
-        libfox-1.6-dev libclang-6.0-dev
+        libfox-1.6-dev libclang-6.0-dev libsdl1.2-dev
 
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
         gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \

@@ -36,7 +36,7 @@ RUN apt-get install --yes -qq \
 
 # Workaround for "libQt5Core.so.5 not found" issue
 # see https://www.gitmemory.com/issue/Microsoft/WSL/3023/488329451
-RUN strip --remove-section=.note.ABI-tag /opt/${QT_BASE}/lib/libQt5Core.so.${QT_VERSION_FULL}
+RUN strip --remove-section=.note.ABI-tag /opt/qt${QT_BASE}/lib/libQt5Core.so.${QT_VERSION_FULL}
 
 RUN python3 -m pip install \
         asciitree jinja2 \

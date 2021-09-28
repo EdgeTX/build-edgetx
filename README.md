@@ -1,4 +1,4 @@
-# Docker images to build EdgeTX 2.4
+# Docker images to build EdgeTX
 
 [![Docker Image CI](https://github.com/EdgeTX/build-edgetx/actions/workflows/docker-image.yml/badge.svg)](https://github.com/EdgeTX/build-edgetx/actions/workflows/docker-image.yml)
 

@@ -16,21 +16,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Check out the repo
+      - name: Check out the repo
         uses: actions/checkout@v2
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Login to GitHub Container Registry
-        uses: docker/login-action@v1 
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and Push edgetx-dev
+
+      - name: Build and Push edgetx-dev
         uses: docker/build-push-action@v2
         with:
           context: dev/
@@ -38,15 +37,14 @@ jobs:
           push: true
           tags: |
             ghcr.io/edgetx/edgetx-dev:latest
-            ghcr.io/edgetx/edgetx-dev:2.5
-      -
-        name: Build and Push edgetx-commit-tests
+            ghcr.io/edgetx/edgetx-dev:2.5.1
+
+      - name: Build and Push edgetx-builder
         uses: docker/build-push-action@v2
         with:
-          context: commit-tests/
-          file: commit-tests/Dockerfile
+          context: builder/
+          file: builder/Dockerfile
           push: true
           tags: |
-            ghcr.io/edgetx/edgetx-commit-tests:latest
-            ghcr.io/edgetx/edgetx-commit-tests:2.5
-          
+            ghcr.io/edgetx/edgetx-builder:latest
+            ghcr.io/edgetx/edgetx-builder:2.5.1

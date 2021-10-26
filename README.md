@@ -21,25 +21,18 @@ root@02157a542d21:/# cd /src
 
 Then you can just do whatever you need to do with your EdgeTX source tree (compile, test, whatever).
 
-### edgetx-commit-tests
+### edgetx-builder
 
-The `edgetx-commit-tests` image is meant to be run with specific `FLAVOR`, so you can if the commit tests on Travis would likely pass on github:
-```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=COLORLCD ghcr.io/edgetx/edgetx-commit-tests
-```
-
-You can however run them all by using (beware, this is going to be a very long run):
-```
-% docker run -it --rm -v $(pwd):/src -e FLAVOR=ALL ghcr.io/edgetx/edgetx-commit-tests
-```
-
+The `edgetx-builder` image is meant to be used in [cloudbuild](https://github.com/EdgeTX/cloudbuild) project. It favours
+rootless user by default, other than that it is exactly the same as `edgetx-dev`.
 
 ## Docker repositories
 
-The `edgetx-dev` and `edgetx-commit-tests` image are hosted at Docker hub & Github Container Repository for your convenience.
+The `edgetx-dev` and `edgetx-builder` image are hosted at Docker hub & Github Container Repository for your convenience.
 
 Pulling from Github Container Repository with this command:
+
 ```
 % docker pull ghcr.io/edgetx/edgetx-dev
-% docker pull ghcr.io/edgetx/edgetx-commit-tests
+% docker pull ghcr.io/edgetx/edgetx-builder
 ```

@@ -8,35 +8,38 @@ ARG OS_CODENAME
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -qq && \
-        apt-get install --yes \
-        software-properties-common \
-        build-essential gpg wget \
-        libfox-1.6-dev libclang-6.0-dev libsdl1.2-dev
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends software-properties-common gpg wget && \
+    wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
+    gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
+    echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ${OS_CODENAME} main" | \
+    tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
+    apt-get update && \
+    apt-get install --yes --no-install-recommends \
+        build-essential \
+        dumb-init \
+        build-essential \
+        libfox-1.6-dev libclang-6.0-dev libsdl1.2-dev \
+        cmake \
+        git \
+        zip \
+        unzip \
+        python3-pip \
+        # Install some dependencies required by Qt libs
+        libxkbcommon-x11-0 gstreamer1.0-plugins-base && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
-        gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
-        echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ${OS_CODENAME} main" | \
-        tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
-        apt-get update -qq && apt-get install --yes cmake
-
-RUN add-apt-repository ppa:git-core/ppa --yes && \
-        apt-get update -qq && \
-        apt-get install --yes -qq \
-        git wget zip unzip \
-        python3-pip
-
-RUN python3 -m pip install \
-        asciitree jinja2 \
-        pillow==7.2.0 \
-        clang==6.0.0
+RUN python3 -m pip install -U pip setuptools \
+    && python3 -m pip install \
+    asciitree \
+    jinja2 \
+    pillow==7.2.0 \
+    clang==6.0.0 \
+    aqtinstall
 
 # Qt installation adapted from
 # see https://github.com/miurahr/aqtinstall/
 # see https://github.com/vslotman/docker-aqtinstall
-
-RUN python3 -m pip install \
-        aqtinstall
 
 ARG QT_VERSION=5.12.9
 # if modules use syntax -m MODULE [MODULE]
@@ -45,11 +48,7 @@ ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
 
-# Install some dependencies required by Qt libs
-RUN apt-get install --yes -qq \
-        libxkbcommon-x11-0 gstreamer1.0-plugins-base
-
-RUN aqt install --outputdir ${QT_INSTALL_DIR} ${QT_MODULES} ${QT_VERSION} ${QT_HOST} ${QT_TARGET}
+RUN aqt install --outputdir ${QT_INSTALL_DIR} ${QT_MODULEgS} ${QT_VERSION} ${QT_HOST} ${QT_TARGET}
 
 ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 
@@ -71,6 +70,6 @@ ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}
 
 VOLUME ["/src"]
 
-COPY entrypoint.sh /opt
+ENV ASAN_OPTIONS="detect_leaks=0"
 
-ENTRYPOINT ["/opt/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]

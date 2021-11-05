@@ -19,12 +19,12 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        build-essential \
         libfox-1.6-dev libclang-6.0-dev libsdl1.2-dev \
         cmake \
         git \
         zip \
         unzip \
+        file \
         python3-pip \
         # Install some dependencies required by Qt libs
         libxkbcommon-x11-0 gstreamer1.0-plugins-base && \

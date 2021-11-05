@@ -14,6 +14,7 @@ RUN apt-get update && \
     gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
     echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ${OS_CODENAME} main" | \
     tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
+    add-apt-repository ppa:git-core/ppa --yes && \
     apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \

@@ -35,9 +35,7 @@ jobs:
           context: dev/
           file: dev/Dockerfile
           push: true
-          tags: |
-#            ghcr.io/edgetx/edgetx-dev:latest
-            ghcr.io/edgetx/edgetx-dev:2.5.1
+          tags: ghcr.io/edgetx/edgetx-dev:2.5.1
 
       - name: Build and Push edgetx-builder
         uses: docker/build-push-action@v2

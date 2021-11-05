@@ -1,7 +1,7 @@
-.PHONY: opentx-dev opentx-builder
+.PHONY: edgetx-dev edgetx-builder
 
-opentx-dev:
-	docker build -t opentx-dev ./dev
+edgetx-dev:
+	docker build -t edgetx-dev ./dev
 
-opentx-builder:
-	docker build -t opentx-dev ./builder
+edgetx-builder:
+	docker build -t edgetx-dev ./builder

@@ -49,7 +49,7 @@ ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
 
-RUN aqt install --outputdir ${QT_INSTALL_DIR} ${QT_MODULEgS} ${QT_VERSION} ${QT_HOST} ${QT_TARGET}
+RUN aqt install --outputdir ${QT_INSTALL_DIR} ${QT_MODULES} ${QT_VERSION} ${QT_HOST} ${QT_TARGET}
 
 ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 

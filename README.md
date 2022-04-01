@@ -36,3 +36,7 @@ Pulling from Github Container Repository with this command:
 % docker pull ghcr.io/edgetx/edgetx-dev
 % docker pull ghcr.io/edgetx/edgetx-builder
 ```
+
+# References
+
+https://github.com/EdgeTX/edgetx/wiki/Build-Instructions-using-docker-and-Windows-10

@@ -37,6 +37,7 @@ jobs:
         with:
           context: dev/
           file: dev/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             ghcr.io/edgetx/edgetx-dev:2.8-multi-arch

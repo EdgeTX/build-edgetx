@@ -1,4 +1,5 @@
 ARG OS_CODENAME=bionic
+ARG QT_VERSION=5.12.11
 
 #
 # Architecture independent
@@ -42,8 +43,9 @@ RUN python3 -m pip install -U pip setuptools \
     clang==6.0.0 \
     lz4
 
-ARG TARGETOS=linux
-ARG TARGETARCH=amd64
+# Values for next stages
+ARG TARGETOS
+ARG TARGETARCH
 
 #
 # amd64 specific definitions
@@ -51,54 +53,23 @@ ARG TARGETARCH=amd64
 FROM base AS base-amd64
 ENV ARM_GCC_ARCH="x86_64"
 
-RUN apt-get update && \
-    apt-get install --yes --no-install-recommends \
-        # Install some dependencies required by Qt libs
-        libxkbcommon-x11-0 gstreamer1.0-plugins-base && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN python3 -m pip install aqtinstall
-
-# Qt installation adapted from
-# see https://github.com/miurahr/aqtinstall/
-# see https://github.com/vslotman/docker-aqtinstall
-
-ARG QT_VERSION=5.12.10
-# if modules use syntax -m MODULE [MODULE]
-ARG QT_MODULES=
-ARG QT_HOST=linux
-ARG QT_TARGET=desktop
-ARG QT_INSTALL_DIR=/opt/qt
-
-RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_MODULES}
-
-ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
-
-# Workaround for "libQt5Core.so.5 not found" issue
-# see https://www.gitmemory.com/issue/Microsoft/WSL/3023/488329451
-RUN strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
-
 #
 # arm64 specific definitions
-#
-
-# Qt dev image for arm64
-FROM carlonluca/qt-dev:5.12.11 AS qt-dev
-#
 #
 FROM base AS base-arm64
 ENV ARM_GCC_ARCH="aarch64"
 
-ARG QT_VERSION=5.12.11
-ARG QT_INSTALL_DIR=/opt/qt
-ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
+#
+# Architecture independent
+#
+# Qt dev image with pre-compiled Qt
+FROM carlonluca/qt-dev:${QT_VERSION} AS qt-dev
+#
+#
+FROM base-${TARGETARCH} AS final
+
+ARG QT_VERSION
+ARG QT_BASE_DIR=/opt/qt/${QT_VERSION}
 
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
@@ -107,12 +78,8 @@ ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-COPY --from=qt-dev /opt/Qt-arm64-${QT_VERSION}/* ${QT_BASE_DIR}/
-
-#
-# Architecture independent
-#
-FROM base-${TARGETARCH} AS final
+RUN mkdir -p ${QT_BASE_DIR}
+COPY --from=qt-dev /opt/Qt-${TARGETARCH}-${QT_VERSION} ${QT_BASE_DIR}
 
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-${ARM_GCC_ARCH}-linux.tar.bz2 -O - \
         | tar -xj -C /opt

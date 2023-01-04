@@ -51,6 +51,7 @@ ARG QT_TOOLS=tools_openssl_x64
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
+ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 
 # cmd 1 installs Qt dev
 # cmd 2 installs tools to individual directories under ${QT_INSTALL_DIR}/Tools
@@ -60,8 +61,6 @@ ARG QT_INSTALL_DIR=/opt/qt
 RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
 	aqt install-tool --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_TOOLS} && \
 	strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
-
-ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/

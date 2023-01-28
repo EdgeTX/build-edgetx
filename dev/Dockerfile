@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev libclang-6.0-dev libsdl1.2-dev \
+        libfox-1.6-dev libclang-6.0-dev libsdl2-dev \
         cmake \
         git \
         zip \

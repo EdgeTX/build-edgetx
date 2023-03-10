@@ -1,4 +1,4 @@
-ARG OS_CODENAME=bionic
+ARG OS_CODENAME=focal
 
 FROM ubuntu:${OS_CODENAME}
 
@@ -20,7 +20,7 @@ RUN apt-get update && \
         build-essential \
         dumb-init \
         libfox-1.6-dev python3-clang-10 \
-        libsdl1.2-dev libsdl2-dev \
+        libsdl2-dev \
         cmake \
         git \
         zip \
@@ -29,7 +29,9 @@ RUN apt-get update && \
         python3-pip \
         gawk \
         # Install some dependencies required by Qt libs
-        libxkbcommon-x11-0 gstreamer1.0-plugins-base && \
+        gstreamer1.0-plugins-base \
+        # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
+        awesome && \
     rm -rf /var/lib/apt/lists/*
 
 RUN python3 -m pip install -U pip setuptools \
@@ -44,7 +46,7 @@ RUN python3 -m pip install -U pip setuptools \
 # see https://github.com/miurahr/aqtinstall/
 # see https://github.com/vslotman/docker-aqtinstall
 
-ARG QT_VERSION=5.12.9
+ARG QT_VERSION=5.15.2
 # if modules use syntax -m MODULE [MODULE]
 ARG QT_MODULES=
 # supported versions of dependencies

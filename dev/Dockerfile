@@ -27,6 +27,7 @@ RUN apt-get update && \
         unzip \
         file \
         python3-pip \
+        gawk \
         # Install some dependencies required by Qt libs
         libxkbcommon-x11-0 gstreamer1.0-plugins-base && \
     rm -rf /var/lib/apt/lists/*

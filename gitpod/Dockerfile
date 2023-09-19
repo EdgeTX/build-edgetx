@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libclang-14-dev \
+        python3-clang \
         cmake \
         git \
         zip \
@@ -28,7 +28,6 @@ RUN python3 -m pip install -U pip setuptools \
     asciitree \
     jinja2 \
     pillow \
-    clang==14.0.6 \
     lz4
 
 ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}

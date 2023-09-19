@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev libclang-6.0-dev \
+        libfox-1.6-dev python3-clang-10 \
         libsdl1.2-dev libsdl2-dev \
         cmake \
         git \
@@ -37,7 +37,6 @@ RUN python3 -m pip install -U pip setuptools \
     asciitree \
     jinja2 \
     pillow==7.2.0 \
-    clang==6.0.0 \
     aqtinstall \
     lz4
 

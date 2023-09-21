@@ -48,7 +48,7 @@ ARG QT_VERSION=5.12.9
 # if modules use syntax -m MODULE [MODULE]
 ARG QT_MODULES=
 # supported versions of dependencies
-ARG QT_TOOLS=tools_openssl_x64
+ARG QT_TOOLS=
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
@@ -69,9 +69,6 @@ ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
-
-# Companion installer expects this variable to be set
-ENV QT_TOOLS_OPENSSL_ROOT_PATH=${QT_INSTALL_DIR}/Tools/OpenSSL/binary
 
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2 -O - \
         | tar -xj -C /opt

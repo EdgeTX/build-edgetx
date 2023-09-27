@@ -54,8 +54,7 @@ ARG QT_INSTALL_DIR=/opt/qt
 ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 
 # cmd 1 installs Qt dev
-# cmd 2 installs tools to individual directories under ${QT_INSTALL_DIR}/Tools
-# cmd 3 Workaround for "libQt5Core.so.5 not found" issue
+# cmd 2 Workaround for "libQt5Core.so.5 not found" issue
 #		see https://www.gitmemory.com/issue/Microsoft/WSL/3023/488329451
 
 RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \

@@ -28,8 +28,10 @@ RUN apt-get update && \
         file \
         python3-pip \
         gawk \
-        # Install some dependencies required by Qt libs
-        gstreamer1.0-plugins-base \
+        # Install dfu-util and libusb
+        dfu-util \
+        # Install dependencies required by Qt libs
+        libssl-dev \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \
     rm -rf /var/lib/apt/lists/*
@@ -77,5 +79,9 @@ ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}
 VOLUME ["/src"]
 
 ENV ASAN_OPTIONS="detect_leaks=0"
+
+# HINTS for cmake find_package
+ENV LIBUSB1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
+ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

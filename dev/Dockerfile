@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev libclang-6.0-dev \
+        libfox-1.6-dev python3-clang-10 \
         libsdl2-dev \
         cmake \
         git \
@@ -27,6 +27,7 @@ RUN apt-get update && \
         unzip \
         file \
         python3-pip \
+        gawk \
         # Install some dependencies required by Qt libs
         gstreamer1.0-plugins-base \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
@@ -38,7 +39,6 @@ RUN python3 -m pip install -U pip setuptools \
     asciitree \
     jinja2 \
     pillow==7.2.0 \
-    clang==6.0.0 \
     aqtinstall \
     lz4
 
@@ -50,19 +50,16 @@ ARG QT_VERSION=5.15.2
 # if modules use syntax -m MODULE [MODULE]
 ARG QT_MODULES=
 # supported versions of dependencies
-ARG QT_TOOLS=tools_openssl_x64
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
 ARG QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 
 # cmd 1 installs Qt dev
-# cmd 2 installs tools to individual directories under ${QT_INSTALL_DIR}/Tools
-# cmd 3 Workaround for "libQt5Core.so.5 not found" issue
+# cmd 2 Workaround for "libQt5Core.so.5 not found" issue
 #		see https://www.gitmemory.com/issue/Microsoft/WSL/3023/488329451
 
 RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
-	aqt install-tool --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_TOOLS} && \
 	strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
 
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
@@ -71,9 +68,6 @@ ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
-
-# Companion installer expects this variable to be set
-ENV QT_TOOLS_OPENSSL_ROOT_PATH=${QT_INSTALL_DIR}/Tools/OpenSSL/binary
 
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2 -O - \
         | tar -xj -C /opt

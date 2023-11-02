@@ -32,6 +32,7 @@ RUN apt-get update && \
         dfu-util \
         # Install dependencies required by Qt libs
         libssl-dev \
+        gstreamer1.0-plugins-base \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \
     rm -rf /var/lib/apt/lists/*

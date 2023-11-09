@@ -83,6 +83,6 @@ ENV ASAN_OPTIONS="detect_leaks=0"
 
 # HINTS for cmake find_package
 ENV LIBUSB1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
-ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu
+ENV LIBSSL1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

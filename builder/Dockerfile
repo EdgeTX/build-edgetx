@@ -29,6 +29,10 @@ RUN python3 -m pip install -U pip setuptools \
     pillow \
     lz4
 
+# work-around for datacopy build script in 2.8.5
+RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.14.0.0 /usr/lib/libclang-14.so && \
+    ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.14.0.0 /usr/lib/libclang.so
+
 ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}
 
 VOLUME ["/src"]

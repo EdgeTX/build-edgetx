@@ -1,4 +1,4 @@
-ARG OS_CODENAME=focal
+ARG OS_CODENAME=jammy
 
 FROM ubuntu:${OS_CODENAME}
 
@@ -15,7 +15,7 @@ ARG NODE_VERSION=20.x
 
 # Setup package repositories and install all dependencies in a single layer
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends software-properties-common gpg wget ca-certificates && \
+    apt-get install --yes --no-install-recommends software-properties-common gpg gpg-agent wget ca-certificates && \
     mkdir -p /etc/apt/keyrings && \
     # Set up Kitware repository
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \

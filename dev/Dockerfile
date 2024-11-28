@@ -44,7 +44,8 @@ RUN python3 -m pip install -U pip setuptools \
     jinja2 \
     pillow==7.2.0 \
     aqtinstall \
-    lz4
+    lz4 \
+    pyelftools
 
 # Qt installation adapted from
 # see https://github.com/miurahr/aqtinstall/

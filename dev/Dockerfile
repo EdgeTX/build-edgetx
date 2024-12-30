@@ -27,6 +27,7 @@ RUN apt-get update && \
         unzip \
         file \
         python3-pip \
+        python3-dev \
         gawk \
         # Install dfu-util and libusb
         dfu-util \

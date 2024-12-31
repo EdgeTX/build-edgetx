@@ -27,6 +27,7 @@ RUN apt-get update && \
         unzip \
         file \
         python3-pip \
+        python3-dev \
         gawk \
         # Install dfu-util and libusb
         dfu-util \
@@ -72,10 +73,10 @@ ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2 -O - \
-        | tar -xj -C /opt
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz -O - \
+        | tar -xJ -C /opt
 
-ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}
+ENV PATH=/opt/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin/:${PATH}
 
 VOLUME ["/src"]
 

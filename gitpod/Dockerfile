@@ -18,8 +18,8 @@ RUN apt-get update && \
         gawk && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2 -O - \
-        | tar -xj -C /opt
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/14.2.rel1/binrel/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi.tar.xz -O - \
+        | tar -xJ -C /opt
 
 USER gitpod
 
@@ -30,7 +30,7 @@ RUN python3 -m pip install -U pip setuptools \
     pillow \
     lz4
 
-ENV PATH=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/:${PATH}
+ENV PATH=/opt/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin/:${PATH}
 
 VOLUME ["/src"]
 

@@ -1,4 +1,4 @@
-ARG OS_CODENAME=jammy
+ARG OS_CODENAME=noble
 
 FROM ubuntu:${OS_CODENAME}
 

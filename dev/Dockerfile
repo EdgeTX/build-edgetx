@@ -90,13 +90,12 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # Install Qt - adapted from
 # https://github.com/miurahr/aqtinstall/
 # https://github.com/vslotman/docker-aqtinstall
-ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
+ENV PATH=${QT_INSTALL_DIR}/bin:$PATH
+ENV QT_PLUGIN_PATH=${QT_INSTALL_DIR}/plugins/
+ENV QML_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
+ENV QML2_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
+ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
+ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
 RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 

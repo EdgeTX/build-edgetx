@@ -5,8 +5,8 @@ FROM ubuntu:${OS_CODENAME}
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=5.15.2
-ARG QT_MODULES=
+ARG QT_VERSION=6.8.2
+ARG QT_MODULES="-m qtmultimedia qtserialport"
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
 ARG QT_INSTALL_DIR=/opt/qt
@@ -34,7 +34,8 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev python3-clang-10 \
+        libfox-1.6-dev \
+        python3-clang-14 \
         libsdl2-dev \
         cmake \
         kitware-archive-keyring \
@@ -65,12 +66,13 @@ RUN apt-get update && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Python packages installation
-RUN python3 -m pip install -U pip setuptools && \
+# Python 3.11 introduced the managed environment breakage aka PEP 668.
+# since we are building a self-contained environment the simple fix is to add --break-system-packages to all pip installs
+RUN python3 -m pip install -U setuptools && \
     python3 -m pip install \
         asciitree \
         jinja2 \
-        pillow==7.2.0 \
+        pillow \
         aqtinstall \
         lz4 \
         pyelftools && \
@@ -80,17 +82,14 @@ RUN python3 -m pip install -U pip setuptools && \
 # Install Qt - adapted from
 # https://github.com/miurahr/aqtinstall/
 # https://github.com/vslotman/docker-aqtinstall
-ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
+ENV PATH=${QT_INSTALL_DIR}/bin:$PATH
+ENV QT_PLUGIN_PATH=${QT_INSTALL_DIR}/plugins/
+ENV QML_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
+ENV QML2_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
+ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
+ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
-    strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
-
+RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 # Install ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
     | tar -xJ -C /opt

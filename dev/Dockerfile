@@ -13,6 +13,9 @@ ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 # Setup package repositories and install all dependencies in a single layer
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends software-properties-common gpg gpg-agent wget ca-certificates && \

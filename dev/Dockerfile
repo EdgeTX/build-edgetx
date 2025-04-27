@@ -16,6 +16,11 @@ RUN apt-get update && \
     echo "deb [signed-by=/etc/apt/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ ${OS_CODENAME} main" | \
     tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
     apt-get update && \
+    wget -O - https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key 2>/dev/null | \
+    gpg --dearmor - | tee /etc/apt/keyrings/nodesource.gpg >/dev/null && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | \
+    tee /etc/apt/sources.list.d/nodesource.list >/dev/null && \
+    apt-get update && \
     apt-get install kitware-archive-keyring && \
     add-apt-repository ppa:git-core/ppa --yes --no-update && \
     apt-get update && \
@@ -32,6 +37,8 @@ RUN apt-get update && \
         python3-pip \
         python3-dev \
         gawk \
+        # for font generation and cfn sorting
+        nodejs \
         # Install dfu-util and libusb
         dfu-util \
         # Install dependencies required by Qt libs

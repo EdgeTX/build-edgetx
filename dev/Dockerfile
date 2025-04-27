@@ -39,6 +39,7 @@ RUN apt-get update && \
         gawk \
         # for font generation and cfn sorting
         nodejs \
+        locales\
         # Install dfu-util and libusb
         dfu-util \
         # Install dependencies required by Qt libs
@@ -46,7 +47,14 @@ RUN apt-get update && \
         gstreamer1.0-plugins-base \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Generate locales for cfn sorting and install lv_font_conv
+RUN locale-gen zh_CN.UTF-8 cs_CZ.UTF-8 da_DK.UTF-8 de_DE.UTF-8 es_ES.UTF-8 \
+               en_US.UTF-8 fi_FI.UTF-8 fr_FR.UTF-8 he_IL.UTF-8 it_IT.UTF-8 \
+               ja_JP.UTF-8 ko_KR.UTF-8 nl_NL.UTF-8 pl_PL.UTF-8 pt_PT.UTF-8 \
+               ru_RU.UTF-8 sv_SE.UTF-8 zh_TW.UTF-8 uk_UA.UTF-8 && \
+    npm i lv_font_conv -g
 
 RUN python3 -m pip install -U pip setuptools \
     && python3 -m pip install \

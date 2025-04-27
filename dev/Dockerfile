@@ -45,8 +45,9 @@ RUN apt-get update && \
         python3-pip \
         python3-dev \
         gawk \
+        # Install dfu-util and libusb
         dfu-util \
-        # for font generation and cfn sorting
+        # For font generation and cfn sorting
         nodejs \
         locales \
         # Install dependencies required by Qt libs

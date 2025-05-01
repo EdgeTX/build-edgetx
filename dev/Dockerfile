@@ -56,7 +56,7 @@ RUN apt-get update && \
         locales \
         # Install dependencies required by Qt libs
         libssl-dev \
-        gstreamer1.0-plugins-base \
+        # gstreamer1.0-plugins-base \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \
     # Generate all required locales
@@ -85,20 +85,23 @@ RUN python3 -m pip install -U setuptools && \
 # Install Qt - adapted from
 # https://github.com/miurahr/aqtinstall/
 # https://github.com/vslotman/docker-aqtinstall
-ENV PATH=${QT_INSTALL_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_INSTALL_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_INSTALL_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
-ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
+ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
+ENV PATH=${QT_BASE_DIR}/bin:$PATH
+ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
+ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
+ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
+ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
+ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
 RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
+
 # Install ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
     | tar -xJ -C /opt
 
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
 ENV ASAN_OPTIONS="detect_leaks=0"
+
 # HINTS for cmake find_package
 ENV LIBUSB1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 ENV LIBSSL1_ROOT_DIR=/usr/lib/x86_64-linux-gnu

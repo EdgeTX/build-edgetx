@@ -9,6 +9,7 @@ ARG QT_VERSION=6.9.0
 ARG QT_MODULES="-m qtmultimedia qtserialport"
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
+ARG QT_ARCH=linux_gcc_64
 ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x

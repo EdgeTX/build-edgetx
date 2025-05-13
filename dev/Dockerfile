@@ -1,21 +1,25 @@
-ARG OS_CODENAME=focal
+ARG OS_CODENAME=jammy
 
 FROM ubuntu:${OS_CODENAME}
 
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=5.15.2
-ARG QT_MODULES=
+ARG QT_VERSION=6.9.0
+ARG QT_MODULES="-m qtmultimedia qtserialport"
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
+ARG QT_ARCH=linux_gcc_64
 ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
 # Setup package repositories and install all dependencies in a single layer
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends software-properties-common gpg wget ca-certificates && \
+    apt-get install --yes --no-install-recommends software-properties-common gpg gpg-agent wget ca-certificates && \
     mkdir -p /etc/apt/keyrings && \
     # Set up Kitware repository
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
@@ -34,7 +38,8 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev python3-clang-10 \
+        libfox-1.6-dev \
+        python3-clang-14 \
         libsdl2-dev \
         cmake \
         kitware-archive-keyring \
@@ -52,7 +57,7 @@ RUN apt-get update && \
         locales \
         # Install dependencies required by Qt libs
         libssl-dev \
-        gstreamer1.0-plugins-base \
+        # gstreamer1.0-plugins-base \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \
     # Generate all required locales
@@ -65,12 +70,13 @@ RUN apt-get update && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Python packages installation
-RUN python3 -m pip install -U pip setuptools && \
+# Python 3.11 introduced the managed environment breakage aka PEP 668.
+# since we are building a self-contained environment the simple fix is to add --break-system-packages to all pip installs
+RUN python3 -m pip install -U setuptools && \
     python3 -m pip install \
         asciitree \
         jinja2 \
-        pillow==7.2.0 \
+        pillow \
         aqtinstall \
         lz4 \
         pyelftools && \
@@ -85,11 +91,10 @@ ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
 ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
+ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
+ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
-RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
-    strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
+RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 
 # Install ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
@@ -97,6 +102,7 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
 
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
 ENV ASAN_OPTIONS="detect_leaks=0"
+
 # HINTS for cmake find_package
 ENV LIBUSB1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 ENV LIBSSL1_ROOT_DIR=/usr/lib/x86_64-linux-gnu

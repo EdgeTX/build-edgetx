@@ -29,15 +29,12 @@ RUN apt-get update && \
     tee /etc/apt/sources.list.d/nodesource.list >/dev/null && \
     # Set up Git PPA
     add-apt-repository ppa:git-core/ppa --yes && \
-    # Set up Rob Savoury's PPA for newer SDL2
-    add-apt-repository ppa:savoury1/multimedia --yes && \
     # Install all required packages
     apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
         libfox-1.6-dev python3-clang-10 \
-        libsdl2-dev \
         cmake \
         kitware-archive-keyring \
         git \
@@ -64,6 +61,9 @@ RUN apt-get update && \
                ru_RU.UTF-8 sv_SE.UTF-8 zh_TW.UTF-8 uk_UA.UTF-8 && \
     # Install global npm package
     npm i lv_font_conv -g && \
+    # Set up Rob Savoury's PPA for newer SDL2
+    add-apt-repository ppa:savoury1/multimedia --yes && \
+    apt-get install --yes --no-install-recommends libsdl2-dev  && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 

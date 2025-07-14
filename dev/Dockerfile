@@ -75,7 +75,8 @@ RUN python3 -m pip install -U pip setuptools && \
         pillow==7.2.0 \
         aqtinstall \
         lz4 \
-        pyelftools && \
+        pyelftools \
+        pydantic && \
     # Clean pip cache
     python3 -m pip cache purge
 

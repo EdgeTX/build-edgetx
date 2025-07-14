@@ -28,7 +28,8 @@ RUN python3 -m pip install -U pip setuptools \
     jinja2 \
     pillow \
     lz4 \
-    pyelftools
+    pyelftools \
+    pydantic
 
 # work-around for datacopy build script in 2.8.5
 RUN ln -s /usr/lib/x86_64-linux-gnu/libclang-14.so.14.0.0 /usr/lib/libclang-14.so && \

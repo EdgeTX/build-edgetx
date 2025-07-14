@@ -28,7 +28,9 @@ RUN python3 -m pip install -U pip setuptools \
     asciitree \
     jinja2 \
     pillow \
-    lz4
+    lz4 \
+    pyelftools \
+    pydantic
 
 ENV PATH=/opt/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin/:${PATH}
 

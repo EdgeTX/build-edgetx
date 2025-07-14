@@ -1,4 +1,4 @@
-ARG OS_CODENAME=focal
+ARG OS_CODENAME=jammy
 
 FROM ubuntu:${OS_CODENAME}
 
@@ -15,7 +15,7 @@ ARG NODE_VERSION=20.x
 
 # Setup package repositories and install all dependencies in a single layer
 RUN apt-get update && \
-    apt-get install --yes --no-install-recommends software-properties-common gpg wget ca-certificates && \
+    apt-get install --yes --no-install-recommends software-properties-common gpg gpg-agent wget ca-certificates && \
     mkdir -p /etc/apt/keyrings && \
     # Set up Kitware repository
     wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | \
@@ -34,14 +34,14 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
         dumb-init \
-        libfox-1.6-dev python3-clang-10 \
+        libclang-dev \
+        libfox-1.6-dev \
         cmake \
         kitware-archive-keyring \
         git \
         zip \
         unzip \
         file \
-        python3-pip \
         python3-dev \
         gawk \
         # Install dfu-util and libusb
@@ -68,17 +68,22 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python packages installation
-RUN python3 -m pip install -U pip setuptools && \
-    python3 -m pip install \
+COPY --from=ghcr.io/astral-sh/uv:0.7.20 /uv /uvx /bin/
+ENV VIRTUAL_ENV=/opt/venv
+RUN uv venv \
+        --python-preference system --no-python-downloads \
+        ${VIRTUAL_ENV} && \
+    uv pip install --no-cache \
         asciitree \
+        clang \
         jinja2 \
         pillow==7.2.0 \
         aqtinstall \
         lz4 \
         pyelftools \
-        pydantic && \
-    # Clean pip cache
-    python3 -m pip cache purge
+        pydantic
+# Add venv to PATH
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install Qt - adapted from
 # https://github.com/miurahr/aqtinstall/

@@ -35,7 +35,6 @@ RUN apt-get update && \
         build-essential \
         dumb-init \
         libclang-dev \
-        libfox-1.6-dev \
         cmake \
         kitware-archive-keyring \
         git \

@@ -7,6 +7,7 @@ ARG GCC_ARM_VERSION=14.2.rel1
 
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
+        ca-certificates \
         build-essential \
         dumb-init \
         libclang-dev \

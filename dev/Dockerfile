@@ -77,7 +77,6 @@ RUN uv venv \
         clang \
         jinja2 \
         pillow \
-        aqtinstall \
         lz4 \
         pyelftools \
         pydantic
@@ -95,7 +94,7 @@ ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-RUN uvx --no-cache aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
+RUN uvx --no-cache aqtinstall install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
     strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
 
 # Install ARM toolchain

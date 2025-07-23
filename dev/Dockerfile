@@ -76,7 +76,7 @@ RUN uv venv \
         asciitree \
         clang \
         jinja2 \
-        pillow==7.2.0 \
+        pillow \
         lz4 \
         pyelftools \
         pydantic

@@ -25,8 +25,6 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
         | tar -xJ -C /opt
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
 
-USER gitpod
-
 # Python packages installation
 COPY --from=ghcr.io/astral-sh/uv:0.8.2 /uv /uvx /bin/
 ENV VIRTUAL_ENV=/opt/venv
@@ -44,7 +42,7 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-ENV PATH=/opt/arm-gnu-toolchain-14.2.rel1-x86_64-arm-none-eabi/bin/:${PATH}
+USER gitpod
 
 VOLUME ["/src"]
 

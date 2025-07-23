@@ -37,6 +37,11 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+# Check what is being downloaded
+RUN wget https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O /tmp/toolchain.tar.xz && \
+    file /tmp/toolchain.tar.xz && \
+    head -c 200 /tmp/toolchain.tar.xz
+
 # Install ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
         | tar -xJ -C /opt

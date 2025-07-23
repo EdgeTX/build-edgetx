@@ -53,6 +53,7 @@ RUN apt-get update && \
         nodejs \
         locales \
         # Install dependencies required by Qt libs
+        libcups2 \
         libssl-dev \
         # linuxdeploy-plugin-qt requires libxcb1 and supporting libs
         awesome && \

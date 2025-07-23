@@ -35,7 +35,6 @@ RUN apt-get update && \
         build-essential \
         dumb-init \
         libclang-dev \
-        libfox-1.6-dev \
         cmake \
         kitware-archive-keyring \
         git \
@@ -68,7 +67,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python packages installation
-COPY --from=ghcr.io/astral-sh/uv:0.7.20 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.2 /uv /uvx /bin/
 ENV VIRTUAL_ENV=/opt/venv
 RUN uv venv \
         --python-preference system --no-python-downloads \
@@ -77,8 +76,7 @@ RUN uv venv \
         asciitree \
         clang \
         jinja2 \
-        pillow==7.2.0 \
-        aqtinstall \
+        pillow \
         lz4 \
         pyelftools \
         pydantic
@@ -96,7 +94,7 @@ ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib:$LD_LIBRARY_PATH
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
-RUN aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
+RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES} && \
     strip --remove-section=.note.ABI-tag ${QT_BASE_DIR}/lib/libQt5Core.so.${QT_VERSION}
 
 # Install ARM toolchain

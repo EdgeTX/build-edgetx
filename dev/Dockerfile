@@ -77,6 +77,7 @@ RUN uv venv \
         clang \
         jinja2 \
         pillow \
+        aqtinstall \
         lz4 \
         pyelftools \
         pydantic

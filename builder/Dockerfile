@@ -1,6 +1,6 @@
 ARG OS_CODENAME=jammy
 
-FROM ubuntu:${OS_CODENAME}
+FROM ubuntu:${OS_CODENAME} AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GCC_ARM_VERSION=14.2.rel1
@@ -38,11 +38,21 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+FROM base AS base-amd64
+ENV GCC_ARM_ARCH=x86_64
+
+FROM base AS base-arm64
+ENV GCC_ARM_ARCH=aarch64
+
+ARG TARGETARCH
+
+FROM base-${TARGETARCH}
+
 # Install ARM toolchain
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O - \
         | tar -xJ -C /opt
 
-ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
+ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi/bin/:${PATH}
 
 VOLUME ["/src"]
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

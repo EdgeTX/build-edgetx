@@ -108,7 +108,6 @@ ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${P
 ENV ASAN_OPTIONS="detect_leaks=0"
 
 # HINTS for cmake find_package
-ENV LIBUSB1_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 
 VOLUME ["/src"]

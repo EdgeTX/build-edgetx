@@ -64,9 +64,6 @@ RUN apt-get update && \
                ru_RU.UTF-8 sv_SE.UTF-8 zh_TW.UTF-8 uk_UA.UTF-8 && \
     # Install global npm package
     npm i lv_font_conv -g && \
-    # Set up Rob Savoury's PPA for newer SDL2
-    add-apt-repository ppa:savoury1/multimedia --yes && \
-    apt-get install --yes --no-install-recommends libsdl2-dev  && \
     # Clean up
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -99,6 +96,15 @@ ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
 RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
+
+# Build and install libsdl2
+git clone https://github.com/libsdl-org/SDL.git -b SDL2
+cd SDL
+mkdir build
+cd build
+../configure
+make
+make install
 
 FROM base AS base-amd64
 ENV GCC_ARM_ARCH=x86_64

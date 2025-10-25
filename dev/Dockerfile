@@ -5,7 +5,7 @@ FROM ubuntu:${OS_CODENAME} AS base
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=6.9.0
+ARG QT_VERSION=6.9.2
 ARG QT_MODULES="-m qtmultimedia qtserialport"
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop

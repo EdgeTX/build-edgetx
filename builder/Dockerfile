@@ -5,6 +5,7 @@ FROM ubuntu:${OS_CODENAME}
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GCC_ARM_VERSION=14.2.rel1
 
+# Install system packages
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         ca-certificates \
@@ -38,17 +39,34 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install ARM toolchain
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-$( uname -m )-arm-none-eabi.tar.xz -O - \
-        | tar -xJ -C /opt \
-	&& ln -s /opt/arm-gnu-toolchain-*-arm-none-eabi /opt/arm-gnu-toolchain-arm-none-eabi
+# Create user in base layer (rarely changes)
+RUN useradd --create-home --shell /bin/bash rootless && \
+    mkdir -p /home/rootless/src
 
-ENV PATH=/opt/arm-gnu-toolchain-arm-none-eabi/bin/:${PATH}
+FROM base AS base-amd64
+ARG GCC_ARM_VERSION
+ENV GCC_ARM_ARCH=x86_64
+# Download and extract ARM toolchain
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
+    tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
+    rm /tmp/gcc-arm.tar.xz
+
+FROM base AS base-arm64
+ARG GCC_ARM_VERSION
+ENV GCC_ARM_ARCH=aarch64
+# Download and extract ARM toolchain
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
+    tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
+    rm /tmp/gcc-arm.tar.xz
+
+ARG TARGETARCH
+
+FROM base-${TARGETARCH} AS final
+
+ARG GCC_ARM_VERSION
+ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi/bin/:${PATH}
 
 VOLUME ["/src"]
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-
-RUN useradd --create-home --shell /bin/bash rootless
-RUN mkdir -p /home/rootless/src
-USER rootless
 WORKDIR /home/rootless/src
+USER rootless
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]

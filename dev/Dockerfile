@@ -119,12 +119,9 @@ RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR
 
 # Separate SDL2 build stage - gets cached unless SDL2 source changes
 FROM base AS sdl2-builder
-# Pin to a specific commit for reproducibility and better caching
-ARG SDL2_COMMIT=release-2.32.4
-RUN git clone https://github.com/libsdl-org/SDL.git -b SDL2 --depth 1 && \
+ARG SDL2_TAG=release-2.32.4
+RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TAG} && \
     cd SDL && \
-    git fetch --depth 1 origin ${SDL2_COMMIT} && \
-    git checkout ${SDL2_COMMIT} && \
     mkdir build && \
     cd build && \
     ../configure --disable-static --enable-shared && \

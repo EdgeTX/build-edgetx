@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python packages installation
-COPY --from=ghcr.io/astral-sh/uv:0.8.2 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.24 /uv /uvx /bin/
 ENV VIRTUAL_ENV=/opt/venv
 RUN uv venv \
         --python-preference system --no-python-downloads \

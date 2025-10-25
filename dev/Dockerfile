@@ -98,12 +98,12 @@ ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 
 # Build and install libsdl2
-git clone https://github.com/libsdl-org/SDL.git -b SDL2
-cd SDL
-mkdir build
-cd build
-../configure
-make
+RUN git clone https://github.com/libsdl-org/SDL.git -b SDL2 && \
+cd SDL && \
+mkdir build && \
+cd build && \
+../configure && \
+make && \
 make install
 
 FROM base AS base-amd64

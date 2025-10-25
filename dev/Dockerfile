@@ -97,28 +97,27 @@ ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
 RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 
-# Build and install libsdl2
+# Separate SDL2 build stage - gets cached unless SDL2 source changes
+FROM base AS sdl2-builder
 RUN git clone https://github.com/libsdl-org/SDL.git -b SDL2 && \
-cd SDL && \
-mkdir build && \
-cd build && \
-../configure && \
-make -j2 && \
-make install
+    cd SDL && \
+    mkdir build && \
+    cd build && \
+    ../configure && \
+    make -j$(nproc) && \
+    make install DESTDIR=/sdl2-install && \
+    # Clean up build artifacts to reduce layer size
+    cd ../.. && rm -rf SDL
 
-#RUN git clone https://github.com/libsdl-org/SDL -b SDL2 && \
-#cd SDL && \
-#mkdir build && \
-#cd build && \
-#cmake .. -DCMAKE_BUILD_TYPE=Release && \
-#cmake --build . --config Release --parallel 2 && \
-#cmake --install . --config Release
+# Main base stage with SDL2 installed
+FROM base AS base-with-sdl2
+COPY --from=sdl2-builder /sdl2-install /
+RUN ldconfig
 
-
-FROM base AS base-amd64
+FROM base-with-sdl2 AS base-amd64
 ENV GCC_ARM_ARCH=x86_64
 
-FROM base AS base-arm64
+FROM base-with-sdl2 AS base-arm64
 ENV GCC_ARM_ARCH=aarch64
 
 ARG TARGETARCH

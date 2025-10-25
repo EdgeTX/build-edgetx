@@ -103,8 +103,17 @@ cd SDL && \
 mkdir build && \
 cd build && \
 ../configure && \
-make && \
+make -j2 && \
 make install
+
+#RUN git clone https://github.com/libsdl-org/SDL -b SDL2 && \
+#cd SDL && \
+#mkdir build && \
+#cd build && \
+#cmake .. -DCMAKE_BUILD_TYPE=Release && \
+#cmake --build . --config Release --parallel 2 && \
+#cmake --install . --config Release
+
 
 FROM base AS base-amd64
 ENV GCC_ARM_ARCH=x86_64

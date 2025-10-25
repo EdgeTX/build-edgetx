@@ -1,9 +1,10 @@
 ARG WASI_SDK_RELEASE=25
 
-FROM ghcr.io/webassembly/wasi-sdk:wasi-sdk-${WASI_SDK_RELEASE}
+FROM ghcr.io/webassembly/wasi-sdk:wasi-sdk-${WASI_SDK_RELEASE} AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Install system packages
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         ca-certificates \

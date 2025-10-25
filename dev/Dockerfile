@@ -88,7 +88,7 @@ RUN locale-gen \
 RUN npm i lv_font_conv -g && npm cache clean --force
 
 # Python packages installation
-COPY --from=ghcr.io/astral-sh/uv:0.8.2 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.24 /uv /uvx /bin/
 ENV VIRTUAL_ENV=/opt/venv
 RUN uv venv \
         --python-preference system --no-python-downloads \

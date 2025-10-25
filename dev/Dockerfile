@@ -1,6 +1,6 @@
 ARG OS_CODENAME=jammy
 
-FROM ubuntu:${OS_CODENAME}
+FROM ubuntu:${OS_CODENAME} AS base
 
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
@@ -100,11 +100,21 @@ ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
 RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 
+FROM base AS base-amd64
+ENV GCC_ARM_ARCH=x86_64
+
+FROM base AS base-arm64
+ENV GCC_ARM_ARCH=aarch64
+
+ARG TARGETARCH
+
+FROM base-${TARGETARCH}
+
 # Install ARM toolchain
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O - \
     | tar -xJ -C /opt
 
-ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
+ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi/bin/:${PATH}
 ENV ASAN_OPTIONS="detect_leaks=0"
 
 # HINTS for cmake find_package

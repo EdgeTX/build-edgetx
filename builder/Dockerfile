@@ -5,6 +5,7 @@ FROM ubuntu:${OS_CODENAME} AS base
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GCC_ARM_VERSION=14.2.rel1
 
+# Install system packages
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         ca-certificates \
@@ -22,7 +23,7 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Python packages installation
-COPY --from=ghcr.io/astral-sh/uv:0.8.2 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.24 /uv /uvx /bin/
 ENV VIRTUAL_ENV=/opt/venv
 RUN uv venv \
         --python-preference system --no-python-downloads \
@@ -38,26 +39,34 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+# Create user in base layer (rarely changes)
+RUN useradd --create-home --shell /bin/bash rootless && \
+    mkdir -p /home/rootless/src
+
 FROM base AS base-amd64
+ARG GCC_ARM_VERSION
 ENV GCC_ARM_ARCH=x86_64
+# Download and extract ARM toolchain
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
+    tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
+    rm /tmp/gcc-arm.tar.xz
 
 FROM base AS base-arm64
+ARG GCC_ARM_VERSION
 ENV GCC_ARM_ARCH=aarch64
+# Download and extract ARM toolchain
+RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
+    tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
+    rm /tmp/gcc-arm.tar.xz
 
 ARG TARGETARCH
 
-FROM base-${TARGETARCH}
+FROM base-${TARGETARCH} AS final
 
-# Install ARM toolchain
-RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O - \
-        | tar -xJ -C /opt
-
+ARG GCC_ARM_VERSION
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi/bin/:${PATH}
 
 VOLUME ["/src"]
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-
-RUN useradd --create-home --shell /bin/bash rootless
-RUN mkdir -p /home/rootless/src
-USER rootless
 WORKDIR /home/rootless/src
+USER rootless
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]

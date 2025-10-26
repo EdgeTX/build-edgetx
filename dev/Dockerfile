@@ -153,6 +153,7 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
     tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
     rm /tmp/gcc-arm.tar.xz
 
+# Finishing up
 ARG TARGETARCH
 
 FROM base-${TARGETARCH} AS final

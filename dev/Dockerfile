@@ -160,7 +160,10 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
 FROM base-with-qt-arm64 AS base-arm64
 ARG GCC_ARM_VERSION
 COPY --from=sdl2-builder /sdl2-install /
-RUN ldconfig
+RUN ldconfig && \
+    apt-get update && \
+    apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV GCC_ARM_ARCH=aarch64
 ENV OPENSSL_ROOT_DIR=/usr/lib/aarch64-linux-gnu
 # Download ARM toolchain

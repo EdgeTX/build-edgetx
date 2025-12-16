@@ -57,8 +57,9 @@ RUN apt-get update && \
         dfu-util \
         nodejs \
         locales \
-        libcups2 \
+        libcups2-dev \
         libssl-dev \
+        libvulkan-dev \
         awesome && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 

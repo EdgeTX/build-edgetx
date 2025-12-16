@@ -5,13 +5,14 @@ FROM ubuntu:${OS_CODENAME} AS base
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GCC_ARM_VERSION=14.2.rel1
-ARG NODE_VERSION=20.x
 ARG QT_VERSION=6.9.2
 ARG QT_MODULES="-m qtmultimedia qtserialport"
 ARG QT_HOST=linux
 ARG QT_TARGET=desktop
+ARG QT_ARCH=linux_gcc_64
 ARG QT_INSTALL_DIR=/opt/qt
+ARG GCC_ARM_VERSION=14.2.rel1
+ARG NODE_VERSION=20.x
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -103,27 +104,10 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Qt installation stages - architecture-specific (adapted from aqtinstall)
+# Install Qt - adapted from
 # https://github.com/miurahr/aqtinstall/
 # https://github.com/vslotman/docker-aqtinstall
-
-FROM base AS base-with-qt-amd64
-ARG QT_ARCH=linux_gcc_64
-
 ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
-
-RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
-
-FROM base AS base-with-qt-arm64
-ARG QT_ARCH=linux_gcc_arm64
-
-ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_arm64
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
 ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
@@ -146,10 +130,13 @@ RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TA
     # Clean up build artifacts to reduce layer size
     cd ../.. && rm -rf SDL
 
-FROM base-with-qt-amd64 AS base-amd64
-ARG GCC_ARM_VERSION
+# Main base stage with SDL2 installed
+FROM base AS base-with-sdl2
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig
+
+FROM base-with-sdl2 AS base-amd64
+ARG GCC_ARM_VERSION
 ENV GCC_ARM_ARCH=x86_64
 ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 # Download ARM toolchain
@@ -157,7 +144,7 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
     tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
     rm /tmp/gcc-arm.tar.xz
 
-FROM base-with-qt-arm64 AS base-arm64
+FROM base-with-sdl2 AS base-arm64
 ARG GCC_ARM_VERSION
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig && \

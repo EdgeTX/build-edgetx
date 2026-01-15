@@ -9,7 +9,7 @@ ARG QT_VERSION=6.9.3
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
 
-# Install build dependencies
+# Install build dependencies for QT 6
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential \
@@ -33,8 +33,15 @@ RUN apt-get update && \
         libxcb-render0 \
         libxcb-shape0 \
         libxcb-xfixes0 \
+        libxcb-sync-dev \
+        libxcb-xinerama0-dev \
         libxkbcommon-dev \
-        libxkbcommon-x11-dev && \
+        libxkbcommon-x11-dev \
+        libgl1-mesa-dev \
+        libglu1-mesa-dev \
+        libharfbuzz-dev \
+        libpng-dev \
+        libjpeg-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and build Qt
@@ -50,6 +57,7 @@ RUN mkdir -p /tmp/qt-build && \
         -nomake examples \
         -nomake tests \
         -skip qtwebengine \
+        -skip qtwebview \
         -opensource -confirm-license && \
     cmake --build . --parallel $(nproc) && \
     cmake --install . && \

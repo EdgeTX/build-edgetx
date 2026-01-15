@@ -64,6 +64,7 @@ RUN --mount=type=cache,target=/tmp/qt-build \
         -skip qtwebengine \
         -skip qtwebview \
         -skip qttools \
+        -skip qtdoc \
         -skip qtlocation \
         -skip qtsensors \
         -skip qtconnectivity \

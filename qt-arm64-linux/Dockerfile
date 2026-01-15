@@ -24,6 +24,7 @@ RUN apt-get update && \
         libvulkan-dev \
         libdbus-1-3 \
         libdbus-1-dev \
+        libatspi2.0-dev \
         libfontconfig1-dev \
         libfreetype6-dev \
         libx11-dev \
@@ -83,7 +84,6 @@ RUN --mount=type=cache,target=/tmp/qt-build \
         -skip qtvirtualkeyboard \
         -skip qttranslations \
         -skip qtdocumentation \
-
         -opensource -confirm-license && \
     cmake --build . --parallel $(nproc) && \
     cmake --install .

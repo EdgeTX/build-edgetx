@@ -43,7 +43,14 @@ RUN apt-get update && \
         libglu1-mesa-dev \
         libharfbuzz-dev \
         libpng-dev \
-        libjpeg-dev && \
+        libjpeg-dev \
+        libpulse-dev \
+        libasound2-dev \
+        libavformat-dev \
+        libavcodec-dev \
+        libswresample-dev \
+        gstreamer1.0-dev \
+        libgstreamer-plugins-base1.0-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and build Qt with BuildKit cache mount for build artifacts

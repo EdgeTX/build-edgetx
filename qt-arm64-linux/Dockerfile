@@ -63,9 +63,15 @@ RUN --mount=type=cache,target=/tmp/qt-build \
         -nomake tests \
         -skip qtwebengine \
         -skip qtwebview \
+        -skip qtdeclarative \
+        -skip qtquick3d \
+        -skip qttools \
+        -skip qt3d \
         -skip qtlocation \
         -skip qtsensors \
-        -skip qtdeclarative \
+        -skip qtconnectivity \
+        -skip qtpositioning \
+        -skip qtvirtualkeyboard \
         -skip qttranslations \
         -skip qtdocumentation \
         -opensource -confirm-license && \

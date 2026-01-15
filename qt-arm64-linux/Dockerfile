@@ -19,6 +19,7 @@ RUN apt-get update && \
         git \
         wget \
         ca-certificates \
+        pkg-config \
         libssl-dev \
         libvulkan-dev \
         libdbus-1-dev \
@@ -62,6 +63,11 @@ RUN --mount=type=cache,target=/tmp/qt-build \
         -nomake tests \
         -skip qtwebengine \
         -skip qtwebview \
+        -skip qtlocation \
+        -skip qtsensors \
+        -skip qtdeclarative \
+        -skip qttranslations \
+        -skip qtdocumentation \
         -opensource -confirm-license && \
     cmake --build . --parallel $(nproc) && \
     cmake --install .

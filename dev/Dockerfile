@@ -1,16 +1,10 @@
 ARG OS_CODENAME=jammy
 
-FROM ubuntu:${OS_CODENAME} AS base
+FROM ghcr.io/edgetx/edgetx-qt-base:latest AS base
 
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=6.9.3
-ARG QT_MODULES="-m qtmultimedia qtserialport"
-ARG QT_HOST=linux
-ARG QT_TARGET=desktop
-ARG QT_ARCH=linux_gcc_64
-ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 
@@ -104,19 +98,6 @@ RUN uv venv \
         pydantic
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-# Install Qt - adapted from
-# https://github.com/miurahr/aqtinstall/
-# https://github.com/vslotman/docker-aqtinstall
-ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
-
-RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
 
 # Separate SDL2 build stage - gets cached unless SDL2 source changes
 FROM base AS sdl2-builder

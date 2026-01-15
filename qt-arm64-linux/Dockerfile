@@ -79,6 +79,7 @@ RUN --mount=type=cache,target=/tmp/qt-build \
         -skip qtvirtualkeyboard \
         -skip qttranslations \
         -skip qtdocumentation \
+        -feature -dbus_linked \
         -opensource -confirm-license && \
     cmake --build . --parallel $(nproc) && \
     cmake --install .

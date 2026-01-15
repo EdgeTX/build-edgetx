@@ -50,7 +50,10 @@ RUN apt-get update && \
         libavcodec-dev \
         libswresample-dev \
         gstreamer1.0-dev \
-        libgstreamer-plugins-base1.0-dev && \
+        gstreamer1.0-tools \
+        libgstreamer-plugins-base1.0-dev \
+        libgstreamer-plugins-good1.0-dev \
+        libopenal-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download and build Qt with BuildKit cache mount for build artifacts

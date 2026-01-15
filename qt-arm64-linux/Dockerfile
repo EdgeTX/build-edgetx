@@ -1,10 +1,11 @@
 ARG OS_CODENAME=jammy
+ARG QT_VERSION=6.9.3
 
 FROM ubuntu:${OS_CODENAME}
 
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG QT_VERSION=6.9.3
+ARG QT_VERSION
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -44,12 +45,15 @@ RUN apt-get update && \
         libjpeg-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Download and build Qt
-RUN mkdir -p /tmp/qt-build && \
+# Download and build Qt with BuildKit cache mount for build artifacts
+RUN --mount=type=cache,target=/tmp/qt-build \
+    mkdir -p /tmp/qt-build && \
     cd /tmp/qt-build && \
-    wget -q https://download.qt.io/official_releases/qt/6.9/6.9.3/single/qt-everywhere-src-6.9.3.tar.xz && \
-    tar -xf qt-everywhere-src-6.9.3.tar.xz && \
-    cd qt-everywhere-src-6.9.3 && \
+    if [ ! -d qt-everywhere-src-${QT_VERSION} ]; then \
+        wget -q https://download.qt.io/official_releases/qt/6.9/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz && \
+        tar -xf qt-everywhere-src-${QT_VERSION}.tar.xz; \
+    fi && \
+    cd qt-everywhere-src-${QT_VERSION} && \
     ./configure \
         -prefix /opt/qt \
         -release \
@@ -60,13 +64,10 @@ RUN mkdir -p /tmp/qt-build && \
         -skip qtwebview \
         -opensource -confirm-license && \
     cmake --build . --parallel $(nproc) && \
-    cmake --install . && \
-    cd / && \
-    rm -rf /tmp/qt-build
+    cmake --install .
 
 # Set up Qt environment for runtime use
 ENV QT_INSTALL_DIR=/opt/qt
-ENV QT_VERSION=6.9.3
 ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/

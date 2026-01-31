@@ -43,6 +43,16 @@ You can build it locally using
 ```
 or just use `ghcr.io/edgetx/edgetx-builder`.
 
+## edgetx-wasi
+
+The `edgetx-wasi` image is meant to be used for building platform agnostic Companion simulator plugins. This functionality is still a work in progress.
+
+You can build it locally using
+```
+% make edgetx-wasi
+```
+or just use `ghcr.io/edgetx/edgetx-wasi`.
+
 ## References
 
 - https://github.com/EdgeTX/edgetx/wiki/Build-Instructions-under-Ubuntu-22.04

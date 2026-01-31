@@ -4,14 +4,14 @@
 
 This repository contains Dockerfiles for container images that provide
 consistent isolated environments for building EdgeTX firmwares.
-It is potentially easier alternative to setting up the build environments
+It is a potentially easier alternative to setting up the build environments
 natively on the host operating system using instructions
 at https://github.com/EdgeTX/edgetx/wiki.
 
 ## edgetx-dev
 
 The `edgetx-dev` image is intended as build environment for local
-firmware builds. It it meant to be used in interactive mode together
+firmware builds. It is meant to be used in interactive mode together
 with the EdgeTX sources.
 
 Assuming you have a clone checkout of the https://github.com/EdgeTX/edgetx
@@ -36,6 +36,7 @@ root@64e263539532:/src#
 ```
 you can then just do whatever you need to do with your EdgeTX source
 tree (checkout the desired branch, compile, test).
+
 If unsure, start with the instructions at
 https://github.com/EdgeTX/edgetx/wiki/Build-Instructions-using-docker-and-Windows-10
 or https://github.com/EdgeTX/edgetx/wiki/Build-Instructions-under-Ubuntu-22.04.

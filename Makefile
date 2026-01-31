@@ -4,4 +4,7 @@ edgetx-dev:
 	docker build -t edgetx-dev ./dev
 
 edgetx-builder:
-	docker build -t edgetx-dev ./builder
+	docker build -t edgetx-builder ./builder
+
+edgetx-wasi:
+	docker build -t edgetx-wasi ./wasi

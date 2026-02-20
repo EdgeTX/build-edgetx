@@ -102,7 +102,6 @@ RUN mkdir -p /tmp/qt-build && \
         -DFEATURE_xkbcommon=ON \
         -DFEATURE_ffmpeg=ON \
         -DFEATURE_pulseaudio=ON \
-        -DFEATURE_alsa=ON \
         # Features we don't need
         -DFEATURE_gstreamer=OFF \
         -DFEATURE_vulkan=OFF \

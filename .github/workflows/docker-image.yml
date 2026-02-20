@@ -29,7 +29,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=ghcr.io/edgetx/edgetx-dev
+            name=ghcr.io/${{ github.repository_owner }}/edgetx-dev
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -70,7 +70,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=ghcr.io/edgetx/edgetx-builder
+            name=ghcr.io/${{ github.repository_owner }}/edgetx-builder
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -109,7 +109,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=ghcr.io/edgetx/edgetx-wasi
+            name=ghcr.io/${{ github.repository_owner }}/edgetx-wasi
           tags: |
             type=ref,event=branch
             type=ref,event=pr

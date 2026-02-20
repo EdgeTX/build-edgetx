@@ -1,22 +1,22 @@
-name: Build QT for ARM64 Linux
+name: Build QT
 
 on:
   push:
     branches:
       - main
     paths:
-      - '.github/workflows/build-qt-arm64-linux.yml'
+      - '.github/workflows/build-qt.yml'
       - 'qt-arm64-linux/Dockerfile'
   pull_request:
     branches:
       - main
     paths:
-      - '.github/workflows/build-qt-arm64-linux.yml'
+      - '.github/workflows/build-qt.yml'
       - 'qt-arm64-linux/Dockerfile'
   workflow_dispatch:
 
 jobs:
-  build-qt-arm64-linux:
+  build-qt:
     strategy:
       matrix:
         include:
@@ -53,7 +53,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push QT for ARM64 Linux
+      - name: Build and Push QT
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -83,7 +83,7 @@ jobs:
 
   merge-manifests:
     runs-on: ubuntu-latest
-    needs: build-qt-arm64-linux
+    needs: build-qt
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4

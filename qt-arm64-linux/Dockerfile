@@ -128,6 +128,7 @@ RUN mkdir -p /tmp/qt-build && \
         -DBUILD_qtnetworkauth=OFF \
         -DBUILD_qtopcua=OFF \
         -DBUILD_qtquick3d=OFF \
+        -DBUILD_qtquick3dphysics=OFF \
         -DBUILD_qtquicktimeline=OFF \
         -DBUILD_qtremoteobjects=OFF \
         -DBUILD_qtscxml=OFF \

@@ -1,18 +1,21 @@
 name: Build QT
 
+env:
+  QT_VERSION: 6.9.3
+
 on:
   push:
     branches:
       - main
     paths:
       - '.github/workflows/build-qt.yml'
-      - 'qt-arm64-linux/Dockerfile'
+      - 'qt/Dockerfile'
   pull_request:
     branches:
       - main
     paths:
       - '.github/workflows/build-qt.yml'
-      - 'qt-arm64-linux/Dockerfile'
+      - 'qt/Dockerfile'
   workflow_dispatch:
 
 jobs:
@@ -37,13 +40,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=ghcr.io/${{ github.repository_owner }}/edgetx-qt-arm64-linux
+            name=ghcr.io/${{ github.repository_owner }}/edgetx-qt-build
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=qt-6.9.3
+            type=raw,value=qt-${{ env.QT_VERSION }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry
@@ -57,12 +60,13 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: qt-arm64-linux/
-          file: qt-arm64-linux/Dockerfile
+          context: qt/
+          file: qt/Dockerfile
           platforms: ${{ matrix.platform }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: QT_VERSION=${{ env.QT_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -81,7 +85,7 @@ jobs:
           retention-days: 1
 
   merge-manifests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build-qt
     steps:
       - name: Download digests
@@ -99,13 +103,13 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=ghcr.io/${{ github.repository_owner }}/edgetx-qt-arm64-linux
+            name=ghcr.io/${{ github.repository_owner }}/edgetx-qt
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=qt-6.9.3
+            type=raw,value=qt-${{ env.QT_VERSION }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry
@@ -119,4 +123,4 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'ghcr.io/${{ github.repository_owner }}/edgetx-qt-arm64-linux@sha256:%s ' *)
+            $(printf 'ghcr.io/${{ github.repository_owner }}/edgetx-qt-build@sha256:%s ' *)

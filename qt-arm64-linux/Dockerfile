@@ -39,6 +39,9 @@ RUN apt-get update && \
         libx11-dev \
         libx11-xcb-dev \
         libxext-dev \
+        libxrandr-dev \
+        libxfixes-dev \
+        libxi-dev \
         libxcb-cursor-dev \
         libxcb-icccm4-dev \
         libxcb-image0-dev \

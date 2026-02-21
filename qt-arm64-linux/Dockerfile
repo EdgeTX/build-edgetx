@@ -38,6 +38,7 @@ RUN apt-get update && \
         # Qt XCB/X11 platform plugin (Widgets)
         libx11-dev \
         libx11-xcb-dev \
+        libxext-dev \
         libxcb-cursor-dev \
         libxcb-icccm4-dev \
         libxcb-image0-dev \
@@ -84,7 +85,6 @@ RUN mkdir -p /tmp/qt-build && \
         -DCMAKE_INSTALL_PREFIX=/opt/qt \
         -DQT_BUILD_EXAMPLES=OFF \
         -DQT_BUILD_TESTS=OFF \
-        # Only build the modules EdgeTX needs
         -DBUILD_ONLY_NEEDED=ON \
         -DBUILD_qtbase=ON \
         -DBUILD_qtmultimedia=ON \
@@ -92,9 +92,7 @@ RUN mkdir -p /tmp/qt-build && \
         -DBUILD_qtsvg=ON \
         -DBUILD_qttools=ON \
         -DBUILD_qtshadertools=ON \
-        # qtshadertools is required by qtmultimedia
         -DBUILD_qtxmlpatterns=OFF \
-        # Features we need
         -DFEATURE_dbus=ON \
         -DFEATURE_opengl=ON \
         -DFEATURE_xcb=ON \
@@ -102,13 +100,11 @@ RUN mkdir -p /tmp/qt-build && \
         -DFEATURE_xkbcommon=ON \
         -DFEATURE_ffmpeg=ON \
         -DFEATURE_pulseaudio=ON \
-        # Features we don't need
         -DFEATURE_gstreamer=OFF \
         -DFEATURE_vulkan=OFF \
         -DFEATURE_wayland=OFF \
         -DFEATURE_cups=ON \
         -DFEATURE_printer=ON \
-        # Disable everything else
         -DBUILD_qtwebengine=OFF \
         -DBUILD_qtwebview=OFF \
         -DBUILD_qtlocation=OFF \
@@ -142,5 +138,5 @@ ENV PATH=${QT_INSTALL_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_INSTALL_DIR}/plugins
 ENV QML_IMPORT_PATH=${QT_INSTALL_DIR}/qml
 ENV QML2_IMPORT_PATH=${QT_INSTALL_DIR}/qml
-ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
-ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
+ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib
+ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig

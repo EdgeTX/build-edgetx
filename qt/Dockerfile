@@ -85,7 +85,7 @@ RUN mkdir -p /tmp/qt-build && \
     cmake /tmp/qt-everywhere-src-${QT_VERSION} \
         -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/opt/qt \
+        -DCMAKE_INSTALL_PREFIX=/opt/qt/${QT_VERSION}/gcc_64 \
         -DQT_BUILD_EXAMPLES=OFF \
         -DQT_BUILD_TESTS=OFF \
         -DBUILD_qtbase=ON \
@@ -136,9 +136,10 @@ RUN mkdir -p /tmp/qt-build && \
     rm -rf /tmp/qt-build /tmp/qt-everywhere-src-${QT_VERSION}
 
 ENV QT_INSTALL_DIR=/opt/qt
-ENV PATH=${QT_INSTALL_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_INSTALL_DIR}/plugins
-ENV QML_IMPORT_PATH=${QT_INSTALL_DIR}/qml
-ENV QML2_IMPORT_PATH=${QT_INSTALL_DIR}/qml
-ENV LD_LIBRARY_PATH=${QT_INSTALL_DIR}/lib
-ENV PKG_CONFIG_PATH=${QT_INSTALL_DIR}/lib/pkgconfig
+ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
+ENV PATH=${QT_BASE_DIR}/bin:$PATH
+ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins
+ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml
+ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml
+ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
+ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig

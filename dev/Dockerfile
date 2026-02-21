@@ -1,4 +1,8 @@
 ARG OS_CODENAME=jammy
+ARG QT_VERSION=6.9.3
+ARG QT_IMAGE=ghcr.io/edgetx/edgetx-qt
+
+FROM ${QT_IMAGE}:qt-${QT_VERSION} AS qt-source
 
 FROM ubuntu:${OS_CODENAME}
 
@@ -6,11 +10,6 @@ FROM ubuntu:${OS_CODENAME}
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
 ARG QT_VERSION=6.9.3
-ARG QT_MODULES="-m qtmultimedia qtserialport"
-ARG QT_HOST=linux
-ARG QT_TARGET=desktop
-ARG QT_ARCH=linux_gcc_64
-ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 
@@ -87,9 +86,8 @@ RUN uv venv \
 # Add venv to PATH
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install Qt - adapted from
-# https://github.com/miurahr/aqtinstall/
-# https://github.com/vslotman/docker-aqtinstall
+# Install Qt from pre-built image
+ENV QT_INSTALL_DIR=/opt/qt
 ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
 ENV PATH=${QT_BASE_DIR}/bin:$PATH
 ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
@@ -98,7 +96,7 @@ ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
 ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
 ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 
-RUN uvx --no-cache --from aqtinstall aqt install-qt --outputdir ${QT_INSTALL_DIR} ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} ${QT_MODULES}
+COPY --from=qt-source /opt/qt /opt/qt
 
 # Install ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi.tar.xz -O - \

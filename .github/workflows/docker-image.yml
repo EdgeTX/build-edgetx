@@ -1,5 +1,8 @@
 name: Docker Image CI
 
+env:
+  QT_VERSION: 6.9.3
+
 on:
   push:
     branches:
@@ -8,15 +11,24 @@ on:
       - 'v*'
     paths-ignore:
       - '**.md'
+      - 'qt/**'
   pull_request:
     branches:
       - main
     paths-ignore:
       - '**.md'
+      - 'qt/**'
+  workflow_run:
+    workflows: ["Build QT"]
+    types:
+      - completed
+    branches:
+      - main
 
 jobs:
   dev:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -52,9 +64,13 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            QT_IMAGE=ghcr.io/${{ github.repository_owner }}/edgetx-qt
+            QT_VERSION=${{ env.QT_VERSION }}
 
   builder:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -97,6 +113,7 @@ jobs:
 
   wasi:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4

@@ -85,7 +85,6 @@ RUN mkdir -p /tmp/qt-build && \
         -DCMAKE_INSTALL_PREFIX=/opt/qt \
         -DQT_BUILD_EXAMPLES=OFF \
         -DQT_BUILD_TESTS=OFF \
-        -DBUILD_ONLY_NEEDED=ON \
         -DBUILD_qtbase=ON \
         -DBUILD_qtmultimedia=ON \
         -DBUILD_qtserialport=ON \

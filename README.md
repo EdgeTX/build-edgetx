@@ -13,6 +13,12 @@ Assuming you have a clone checkout of the https://github.com/EdgeTX/edgetx repos
 % make edgetx-dev
 ```
 
+For local `docker build`/`podman build`, you can pass the architecture explicitly (for example, from host `uname -m`):
+```
+% docker build --build-arg TARGETARCH=$(uname -m) -f dev/Dockerfile dev
+% podman build --build-arg TARGETARCH=$(uname -m) -f dev/Dockerfile dev
+```
+
 and then run the container with the EdgeTX sources mounted
 ```
 % docker run -it --rm -w /src -v ~/src/edgetx:/src edgetx-dev bash

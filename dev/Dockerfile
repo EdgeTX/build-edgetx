@@ -1,12 +1,17 @@
 ARG OS_CODENAME=jammy
+ARG QT_VERSION=6.9.3
+ARG QT_IMAGE=ghcr.io/edgetx/edgetx-qt
 
-FROM ghcr.io/edgetx/edgetx-qt-base:latest AS base
+FROM ${QT_IMAGE}:qt-${QT_VERSION} AS edgetx-qt
+
+FROM ubuntu:${OS_CODENAME} AS base
 
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
+ARG QT_VERSION
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -117,6 +122,19 @@ FROM base AS base-with-sdl2
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig
 
+# Copy prebuilt Qt from dedicated Qt image
+COPY --from=edgetx-qt /opt/qt /opt/qt
+
+# Set up Qt environment variables
+ENV QT_INSTALL_DIR=/opt/qt
+ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
+ENV PATH=${QT_BASE_DIR}/bin:$PATH
+ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins/
+ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml/
+ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml/
+ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
+ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
+
 FROM base-with-sdl2 AS base-amd64
 ARG GCC_ARM_VERSION
 ENV GCC_ARM_ARCH=x86_64
@@ -128,9 +146,7 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
 
 FROM base-with-sdl2 AS base-arm64
 ARG GCC_ARM_VERSION
-COPY --from=sdl2-builder /sdl2-install /
-RUN ldconfig && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV GCC_ARM_ARCH=aarch64
@@ -139,6 +155,10 @@ ENV OPENSSL_ROOT_DIR=/usr/lib/aarch64-linux-gnu
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
     tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
     rm /tmp/gcc-arm.tar.xz
+
+# Compatibility aliases for non-buildx tools that use uname-style arch names
+FROM base-amd64 AS base-x86_64
+FROM base-arm64 AS base-aarch64
 
 # Finishing up
 ARG TARGETARCH

@@ -122,5 +122,6 @@ jobs:
       - name: Create and push multi-arch manifest
         working-directory: /tmp/digests
         run: |
+          owner_lc=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'ghcr.io/%s/edgetx-qt-build@sha256:%s ' "${{ github.repository_owner.toLowerCase() }}" *)
+            $(printf 'ghcr.io/%s/edgetx-qt-build@sha256:%s ' "$owner_lc" *)

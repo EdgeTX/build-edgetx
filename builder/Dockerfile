@@ -1,6 +1,6 @@
 ARG OS_CODENAME=jammy
 
-FROM ubuntu:${OS_CODENAME}
+FROM ubuntu:${OS_CODENAME} AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GCC_ARM_VERSION=14.2.rel1

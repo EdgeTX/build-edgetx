@@ -34,7 +34,8 @@ jobs:
       - name: Set image name
         id: image
         run: |
-          echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-dev" >> "$GITHUB_OUTPUT"
+          echo "dev_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-dev" >> "$GITHUB_OUTPUT"
+          echo "qt_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-qt" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -55,9 +56,9 @@ jobs:
           context: dev/
           file: dev/Dockerfile
           platforms: ${{ matrix.platform }}
-          outputs: type=image,name=${{ steps.image.outputs.name }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ steps.image.outputs.dev_image }},push-by-digest=true,name-canonical=true,push=true
           build-args: |
-            QT_IMAGE=ghcr.io/${{ github.repository_owner }}/edgetx-qt
+            QT_IMAGE=${{ steps.image.outputs.qt_image }}
             QT_VERSION=${{ env.QT_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -70,7 +71,7 @@ jobs:
           file: dev/Dockerfile
           platforms: ${{ matrix.platform }}
           build-args: |
-            QT_IMAGE=ghcr.io/${{ github.repository_owner }}/edgetx-qt
+            QT_IMAGE=${{ steps.image.outputs.qt_image }}
             QT_VERSION=${{ env.QT_VERSION }}
           load: true
           cache-from: type=gha
@@ -100,7 +101,7 @@ jobs:
       - name: Set image name
         id: image
         run: |
-          echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-dev" >> "$GITHUB_OUTPUT"
+          echo "dev_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-dev" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
         uses: actions/download-artifact@v4
@@ -117,7 +118,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            name=${{ steps.image.outputs.name }}
+            name=${{ steps.image.outputs.dev_image }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -138,7 +139,7 @@ jobs:
           shopt -s nullglob
           sources=()
           for digest in *; do
-            sources+=("${{ steps.image.outputs.name }}@sha256:${digest}")
+            sources+=("${{ steps.image.outputs.dev_image }}@sha256:${digest}")
           done
 
           if [ ${#sources[@]} -eq 0 ]; then

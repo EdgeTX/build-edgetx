@@ -116,5 +116,16 @@ jobs:
       - name: Create and push multi-arch manifest
         working-directory: /tmp/digests
         run: |
+          shopt -s nullglob
+          sources=()
+          for digest in *; do
+            sources+=("${{ steps.image.outputs.name }}@sha256:${digest}")
+          done
+
+          if [ ${#sources[@]} -eq 0 ]; then
+            echo "No digests found in /tmp/digests"
+            exit 1
+          fi
+
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '%s@sha256:%s ' "${{ steps.image.outputs.name }}" *)
+            "${sources[@]}"

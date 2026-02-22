@@ -35,9 +35,9 @@ You can skip the step of building the container image and instead use the image 
 
 ## edgetx-builder
 
-The `edgetx-builder` image is meant to be used in [cloudbuild](https://github.com/EdgeTX/cloudbuild) project. It favours rootless user by default, other than that it is exactly the same as `edgetx-dev`.
+The `edgetx-builder` image is meant to be used in [cloudbuild](https://github.com/EdgeTX/cloudbuild) project. It is likely of little use if you want to do local builds.
 
-You can build it locally using
+If you have a need for the image, you can build it locally using
 ```
 % make edgetx-builder
 ```

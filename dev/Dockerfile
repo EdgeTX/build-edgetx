@@ -148,7 +148,6 @@ ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
 FROM base-with-sdl2 AS base-amd64
 ARG GCC_ARM_VERSION
 ENV GCC_ARM_ARCH=x86_64
-ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu
 # Download ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
     tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \
@@ -160,7 +159,6 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV GCC_ARM_ARCH=aarch64
-ENV OPENSSL_ROOT_DIR=/usr/lib/aarch64-linux-gnu
 # Download ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \
     tar -xJ -C /opt -f /tmp/gcc-arm.tar.xz && \

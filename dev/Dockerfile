@@ -53,8 +53,6 @@ RUN apt-get update && \
         file \
         python3-dev \
         gawk \
-        # Install dfu-util
-        dfu-util \
         # For font generation and cfn sorting
         nodejs \
         locales \

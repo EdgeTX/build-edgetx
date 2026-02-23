@@ -66,7 +66,7 @@ RUN apt-get update && \
         libxfixes-dev \
         libxi-dev \
         # Runtime dependencies for Qt libs
-        ibdouble-conversion3 \
+        libdouble-conversion3 \
         libpcre2-16-0 \
         libpulse0 \
         awesome && \

@@ -53,12 +53,24 @@ RUN apt-get update && \
         file \
         python3-dev \
         gawk \
+        # Install dfu-util
         dfu-util \
+        # For font generation and cfn sorting
         nodejs \
         locales \
+        # Install dependencies required by Qt libs
         libcups2-dev \
         libssl-dev \
         libvulkan-dev \
+        # X11 extension headers (required by Qt Multimedia's FFmpeg plugin)
+        libxext-dev \
+        libxrandr-dev \
+        libxfixes-dev \
+        libxi-dev \
+        # Runtime dependencies for Qt libs
+        ibdouble-conversion3 \
+        libpcre2-16-0 \
+        libpulse0 \
         awesome && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 

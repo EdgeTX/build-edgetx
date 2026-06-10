@@ -1,6 +1,9 @@
 ARG OS_CODENAME=jammy
 ARG QT_VERSION=6.9.3
 ARG QT_IMAGE=ghcr.io/edgetx/edgetx-qt
+# Global so it resolves in every stage (incl. final) under buildah/podman, which
+# — unlike BuildKit — do not carry a stage-scoped ARG default into later stages.
+ARG GCC_ARM_VERSION=14.2.rel1
 
 FROM ${QT_IMAGE}:qt-${QT_VERSION} AS edgetx-qt
 
@@ -9,7 +12,6 @@ FROM ubuntu:${OS_CODENAME} AS base
 # Redeclare ARGs after FROM
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 ARG QT_VERSION
 

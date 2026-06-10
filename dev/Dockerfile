@@ -53,8 +53,6 @@ RUN apt-get update && \
         file \
         python3-dev \
         gawk \
-        # For SSH via containers
-        openssh-client \
         # For font generation and cfn sorting
         nodejs \
         locales \

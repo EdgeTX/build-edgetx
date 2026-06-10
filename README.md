@@ -14,7 +14,7 @@ Assuming you have a clone checkout of the https://github.com/EdgeTX/edgetx repos
 ```
 
 For local `docker build`/`podman build`, you can pass the architecture explicitly (for example, from host `uname -m`):
-```
+```sh
 % docker build --build-arg TARGETARCH=$(uname -m) -f dev/Dockerfile dev
 % podman build --build-arg TARGETARCH=$(uname -m) -f dev/Dockerfile dev
 ```

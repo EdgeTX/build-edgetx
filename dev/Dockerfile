@@ -1,15 +1,15 @@
 ARG OS_CODENAME=jammy
 ARG QT_VERSION=6.9.3
 ARG QT_IMAGE=ghcr.io/edgetx/edgetx-qt
+ARG GCC_ARM_VERSION=14.2.rel1
 
 FROM ${QT_IMAGE}:qt-${QT_VERSION} AS edgetx-qt
 
 FROM ubuntu:${OS_CODENAME} AS base
 
-# Redeclare ARGs after FROM
+# Redeclare ARGs after FROM (global defaults inherited where omitted)
 ARG OS_CODENAME
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
 ARG QT_VERSION
 
@@ -129,6 +129,9 @@ RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TA
 
 # Main base stage with SDL2 installed
 FROM base AS base-with-sdl2
+# Redeclare so ${QT_VERSION} resolves here (inherited from the global ARG);
+# required for buildah/podman which do not carry ARGs across stages implicitly.
+ARG QT_VERSION
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig
 

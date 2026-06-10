@@ -1,9 +1,9 @@
 ARG OS_CODENAME=jammy
+ARG GCC_ARM_VERSION=14.2.rel1
 
 FROM ubuntu:${OS_CODENAME} AS base
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG GCC_ARM_VERSION=14.2.rel1
 
 # Install system packages
 RUN apt-get update && \

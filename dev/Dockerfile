@@ -67,6 +67,12 @@ RUN apt-get update && \
         libxrandr-dev \
         libxfixes-dev \
         libxi-dev \
+        # FFmpeg runtime libs (required by Qt Multimedia's FFmpeg plugin)
+        libavformat58 \
+        libavcodec58 \
+        libavdevice58 \
+        libswresample3 \
+        libswscale5 \
         # Runtime dependencies for Qt libs
         libdouble-conversion3 \
         libpcre2-16-0 \

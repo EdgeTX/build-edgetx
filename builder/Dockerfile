@@ -1,6 +1,4 @@
 ARG OS_CODENAME=jammy
-# Global so it resolves in every stage (incl. final) under buildah/podman, which
-# — unlike BuildKit — do not carry a stage-scoped ARG default into later stages.
 ARG GCC_ARM_VERSION=14.2.rel1
 
 FROM ubuntu:${OS_CODENAME} AS base

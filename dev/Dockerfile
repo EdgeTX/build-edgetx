@@ -62,6 +62,8 @@ RUN apt-get update && \
         libcups2-dev \
         libssl-dev \
         libvulkan-dev \
+        # OpenGL dev headers/libs required by Qt6Gui (WrapOpenGL)
+        libgl1-mesa-dev \
         # X11 extension headers (required by Qt Multimedia's FFmpeg plugin)
         libxext-dev \
         libxrandr-dev \
@@ -133,11 +135,6 @@ RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TA
 FROM base AS base-with-sdl2
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig
-
-# OpenGL dev headers/libs required by Qt6Gui (WrapOpenGL)
-RUN apt-get update && \
-    apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy prebuilt Qt from dedicated Qt image
 COPY --from=edgetx-qt /opt/qt /opt/qt

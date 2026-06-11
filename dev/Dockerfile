@@ -134,6 +134,11 @@ FROM base AS base-with-sdl2
 COPY --from=sdl2-builder /sdl2-install /
 RUN ldconfig
 
+# OpenGL dev headers/libs required by Qt6Gui (WrapOpenGL)
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Copy prebuilt Qt from dedicated Qt image
 COPY --from=edgetx-qt /opt/qt /opt/qt
 
@@ -157,9 +162,6 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
 
 FROM base-with-sdl2 AS base-arm64
 ARG GCC_ARM_VERSION
-RUN apt-get update && \
-    apt-get install --yes --no-install-recommends libgl1-mesa-dev && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 ENV GCC_ARM_ARCH=aarch64
 # Download ARM toolchain
 RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM_VERSION}/binrel/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi.tar.xz -O /tmp/gcc-arm.tar.xz && \

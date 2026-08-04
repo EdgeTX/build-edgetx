@@ -53,6 +53,40 @@ You can build it locally using
 ```
 or just use `ghcr.io/edgetx/edgetx-wasi`.
 
+## Troubleshooting
+
+### `NO_PUBKEY` / "repository is not signed" errors from apt.kitware.com
+
+If you run `apt update` inside an `edgetx-dev` (or `edgetx-builder`/`edgetx-wasi`) container
+and see something like:
+
+```
+W: GPG error: https://apt.kitware.com/ubuntu <codename> InRelease: The following signatures
+   couldn't be verified because the public key is not available: NO_PUBKEY ...
+E: The repository 'https://apt.kitware.com/ubuntu <codename> InRelease' is not signed.
+```
+
+these images bake in Kitware's apt signing key at build time, and nothing refreshes it
+afterwards. Two things can make an older image's copy go stale: Kitware periodically
+rotates/reissues their signing key upstream, so any image built before a rotation will be
+missing the new key; and separately, the exact keyring path has changed across versions of
+this repo, so an older pulled/tagged image can end up with
+`/etc/apt/sources.list.d/kitware.list` pointing at a path nothing keeps current. Either way,
+apt reports it the same way: a missing key.
+
+**Preferred fix**, if you don't need a specific pinned version: pull or rebuild a fresh image
+(`docker pull ghcr.io/edgetx/edgetx-dev` or `make edgetx-dev`) — a new build always writes a
+matching key and path together. If you're intentionally on an older tag (e.g. building
+against an older EdgeTX release), a newer image may not be an option.
+
+**One-off fix**, without rebuilding, run inside the container (it runs as root by default, so
+no `sudo` needed):
+```
+KEYRING=$(grep -oP '(?<=signed-by=)[^]]+' /etc/apt/sources.list.d/kitware.list) && mkdir -p "$(dirname "$KEYRING")" && wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc | gpg --dearmor | tee "$KEYRING" >/dev/null
+```
+This reads the keyring path your container's `kitware.list` actually references and writes
+the current Kitware key there, rather than assuming a fixed path.
+
 ## References
 
 - https://github.com/EdgeTX/edgetx/wiki/Build-Instructions-under-Ubuntu-22.04

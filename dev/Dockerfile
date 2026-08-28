@@ -13,6 +13,7 @@ ARG QT_ARCH=linux_gcc_64
 ARG QT_INSTALL_DIR=/opt/qt
 ARG GCC_ARM_VERSION=14.2.rel1
 ARG NODE_VERSION=20.x
+ARG JUST_VERSION=1.57.0
 
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
@@ -47,6 +48,8 @@ RUN apt-get update && \
         file \
         python3-dev \
         gawk \
+        # For generating sim_string_list.h from string_list.h
+        m4 \
         # Install dfu-util and libusb
         dfu-util \
         # For font generation and cfn sorting
@@ -106,6 +109,10 @@ RUN wget --quiet https://developer.arm.com/-/media/Files/downloads/gnu/${GCC_ARM
 
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-x86_64-arm-none-eabi/bin/:${PATH}
 ENV ASAN_OPTIONS="detect_leaks=0"
+
+# Install just - runs the Justfile codegen recipes (see edgetx/Justfile)
+RUN wget --quiet -O - https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-x86_64-unknown-linux-musl.tar.gz \
+    | tar -xz -C /usr/local/bin just
 
 # HINTS for cmake find_package
 ENV OPENSSL_ROOT_DIR=/usr/lib/x86_64-linux-gnu

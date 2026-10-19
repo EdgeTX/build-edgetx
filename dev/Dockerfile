@@ -50,8 +50,6 @@ RUN apt-get update && \
         gawk \
         # For generating sim_string_list.h from string_list.h
         m4 \
-        # Install dfu-util and libusb
-        dfu-util \
         # For font generation and cfn sorting
         nodejs \
         locales \

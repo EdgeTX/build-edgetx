@@ -129,8 +129,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Separate SDL2 build stage - gets cached unless SDL2 source changes
 FROM base AS sdl2-builder
-# Keep in step with the SDL2 version used for Windows Companion builds
-ARG SDL2_TAG=release-2.32.8
+# Latest SDL2 release (the PPA this replaced shipped a 2.32.11 dev snapshot)
+ARG SDL2_TAG=release-2.32.10
 # Headers for SDL's audio/video/input backends. SDL dlopen()s these at runtime,
 # so only the build stage needs the -dev packages.
 RUN apt-get update && \

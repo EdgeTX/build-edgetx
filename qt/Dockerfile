@@ -1,10 +1,14 @@
 ARG OS_CODENAME=jammy
 ARG QT_VERSION=6.9.3
+# Qt only publishes MD5 sums; this SHA-256 was computed from a tarball verified
+# against https://download.qt.io/archive/qt/6.9/6.9.3/single/md5sums.txt
+ARG QT_SHA256=59d4fbf50d2524a9082f85d565f0197316cde89c26e97cfc6c157cb255b7ea18
 
 FROM ubuntu:${OS_CODENAME}
 
 ARG OS_CODENAME
 ARG QT_VERSION
+ARG QT_SHA256
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LANG=C.UTF-8
@@ -43,6 +47,7 @@ RUN apt-get update && \
         libxfixes-dev \
         libxi-dev \
         libxcb-cursor-dev \
+        libxcb-glx0-dev \
         libxcb-icccm4-dev \
         libxcb-image0-dev \
         libxcb-keysyms1-dev \
@@ -59,6 +64,11 @@ RUN apt-get update && \
         libxkbcommon-dev \
         libxkbcommon-x11-dev \
         libgl1-mesa-dev \
+        libvulkan-dev \
+        # Qt Wayland platform plugin
+        libwayland-dev \
+        # Qt GTK3 platform theme
+        libgtk-3-dev \
         # Qt Multimedia (audio for voice packs/beeps)
         libpulse-dev \
         libasound2-dev \
@@ -75,8 +85,9 @@ RUN apt-get update && \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download Qt source as a separate layer so it can be cached independently
-RUN wget -q https://download.qt.io/archive/qt/6.9/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz \
+RUN wget -q https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz \
         -O /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz && \
+    echo "${QT_SHA256}  /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz" | sha256sum -c - && \
     tar -xf /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz -C /tmp && \
     rm /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz
 
@@ -88,49 +99,28 @@ RUN mkdir -p /tmp/qt-build && \
         -DCMAKE_INSTALL_PREFIX=/opt/qt/${QT_VERSION}/gcc_64 \
         -DQT_BUILD_EXAMPLES=OFF \
         -DQT_BUILD_TESTS=OFF \
-        -DBUILD_qtbase=ON \
-        -DBUILD_qtmultimedia=ON \
-        -DBUILD_qtserialport=ON \
-        -DBUILD_qtsvg=ON \
-        -DBUILD_qttools=ON \
-        -DBUILD_qtshadertools=ON \
-        -DBUILD_qtxmlpatterns=OFF \
+        # Match the module set of the official aqt linux_gcc_64 install (base +
+        # qtmultimedia + qtserialport). qtshadertools is a build-time dependency
+        # of qtmultimedia; qtlanguageserver provides qmlls.
+        -DQT_BUILD_SUBMODULES="qtbase;qtshadertools;qtdeclarative;qtlanguageserver;qtsvg;qttools;qttranslations;qtwayland;qtmultimedia;qtserialport" \
+        # Optional dependencies that QT_BUILD_SUBMODULES would otherwise pull in
+        -DBUILD_qtactiveqt=OFF \
+        -DBUILD_qtimageformats=OFF \
+        -DBUILD_qtquick3d=OFF \
+        -DBUILD_qtquicktimeline=OFF \
         -DFEATURE_dbus=ON \
         -DFEATURE_opengl=ON \
         -DFEATURE_xcb=ON \
         -DFEATURE_xcb_xlib=ON \
         -DFEATURE_xkbcommon=ON \
+        -DFEATURE_gtk3=ON \
+        -DFEATURE_wayland_client=ON \
+        -DFEATURE_wayland_server=OFF \
         -DFEATURE_ffmpeg=ON \
         -DFEATURE_pulseaudio=ON \
         -DFEATURE_gstreamer=OFF \
-        -DFEATURE_vulkan=OFF \
-        -DFEATURE_wayland=OFF \
         -DFEATURE_cups=ON \
-        -DFEATURE_printer=ON \
-        -DBUILD_qtwebengine=OFF \
-        -DBUILD_qtwebview=OFF \
-        -DBUILD_qtlocation=OFF \
-        -DBUILD_qtsensors=OFF \
-        -DBUILD_qtconnectivity=OFF \
-        -DBUILD_qtpositioning=OFF \
-        -DBUILD_qtvirtualkeyboard=OFF \
-        -DBUILD_qttranslations=OFF \
-        -DBUILD_qtdoc=OFF \
-        -DBUILD_qt3d=OFF \
-        -DBUILD_qtcharts=OFF \
-        -DBUILD_qtcoap=OFF \
-        -DBUILD_qtdatavis3d=OFF \
-        -DBUILD_qtlottie=OFF \
-        -DBUILD_qtmqtt=OFF \
-        -DBUILD_qtnetworkauth=OFF \
-        -DBUILD_qtopcua=OFF \
-        -DBUILD_qtquick3d=OFF \
-        -DBUILD_qtquick3dphysics=OFF \
-        -DBUILD_qtquicktimeline=OFF \
-        -DBUILD_qtremoteobjects=OFF \
-        -DBUILD_qtscxml=OFF \
-        -DBUILD_qtspeech=OFF \
-        -DBUILD_qtwaylandcompositor=OFF && \
+        -DFEATURE_printer=ON && \
     cmake --build . --parallel $(nproc) && \
     cmake --install . && \
     rm -rf /tmp/qt-build /tmp/qt-everywhere-src-${QT_VERSION}

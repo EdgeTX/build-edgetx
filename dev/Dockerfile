@@ -69,16 +69,18 @@ RUN apt-get update && \
         libxrandr-dev \
         libxfixes-dev \
         libxi-dev \
-        # FFmpeg runtime libs (required by Qt Multimedia's FFmpeg plugin)
-        libavformat58 \
-        libavcodec58 \
-        libavdevice58 \
-        libswresample3 \
-        libswscale5 \
         # Runtime dependencies for Qt libs
         libdouble-conversion3 \
         libpcre2-16-0 \
         libpulse0 \
+        # XCB platform plugin (session management)
+        libsm6 \
+        libice6 \
+        # Wayland platform plugin
+        libwayland-cursor0 \
+        libwayland-egl1 \
+        # GTK3 platform theme
+        libgtk-3-0 \
         awesome && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 

@@ -2,12 +2,17 @@ ARG OS_CODENAME=jammy
 ARG QT_VERSION=6.9.3
 # From https://download.qt.io/archive/qt/<major.minor>/<version>/single/md5sums.txt
 ARG QT_MD5=d8fab224d072df8ffa09f99f6245e446
+# NVIDIA codec headers, as used by Qt's own FFmpeg build (sdk/11.1 for 470 driver compat)
+ARG NV_CODEC_TAG=n11.1.5.4
+ARG NV_CODEC_COMMIT=85f332a190555b56a1d5d4c070a076c871c0dcea
 
 FROM ubuntu:${OS_CODENAME}
 
 ARG OS_CODENAME
 ARG QT_VERSION
 ARG QT_MD5
+ARG NV_CODEC_TAG
+ARG NV_CODEC_COMMIT
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LANG=C.UTF-8
@@ -71,11 +76,12 @@ RUN apt-get update && \
         # Qt Multimedia (audio for voice packs/beeps)
         libpulse-dev \
         libasound2-dev \
-        libavformat-dev \
-        libavcodec-dev \
-        libavdevice-dev \
-        libswresample-dev \
-        libswscale-dev \
+        # FFmpeg build (Qt Multimedia backend)
+        nasm \
+        patchelf \
+        libva-dev \
+        libdrm-dev \
+        libbz2-dev \
         # Qt SerialPort
         libudev-dev \
         # Qt PrintSupport
@@ -89,6 +95,28 @@ RUN wget -q https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/sin
     echo "${QT_MD5}  /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz" | md5sum -c - && \
     tar -xf /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz -C /tmp && \
     rm /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz
+
+# Build FFmpeg the same way the official Qt binaries do: the version, checksum
+# and configure options come from Qt's own CI provisioning scripts, and
+# fix_ffmpeg_dependencies.sh redirects the OpenSSL/VA-API dependencies to the
+# Qt6FFmpegStub-* libraries that Qt Multimedia builds (loaded at runtime).
+RUN QT_PROVISIONING=/tmp/qt-everywhere-src-${QT_VERSION}/coin/provisioning/common && \
+    FFMPEG_VERSION=$(sed -n 's/.*local version="${1:-\(.*\)}".*/\1/p' ${QT_PROVISIONING}/unix/ffmpeg-installation-utils.sh) && \
+    FFMPEG_SHA1=$(sed -n 's/.*local sha1="${2:-\(.*\)}".*/\1/p' ${QT_PROVISIONING}/unix/ffmpeg-installation-utils.sh) && \
+    test -n "${FFMPEG_VERSION}" && test -n "${FFMPEG_SHA1}" && \
+    git clone --quiet --depth 1 --branch ${NV_CODEC_TAG} https://github.com/FFmpeg/nv-codec-headers.git /tmp/nv-codec-headers && \
+    test "$(git -C /tmp/nv-codec-headers rev-parse HEAD)" = "${NV_CODEC_COMMIT}" && \
+    make -C /tmp/nv-codec-headers install && \
+    wget -q https://github.com/FFmpeg/FFmpeg/archive/refs/tags/${FFMPEG_VERSION}.tar.gz -O /tmp/ffmpeg.tar.gz && \
+    echo "${FFMPEG_SHA1}  /tmp/ffmpeg.tar.gz" | sha1sum -c - && \
+    tar -xf /tmp/ffmpeg.tar.gz -C /tmp && \
+    cd /tmp/FFmpeg-${FFMPEG_VERSION} && \
+    ./configure $(cat ${QT_PROVISIONING}/shared/ffmpeg_config_options.txt) \
+        --enable-shared --disable-static --enable-openssl --prefix=/opt/ffmpeg && \
+    make -j$(nproc) && \
+    make install && \
+    bash ${QT_PROVISIONING}/shared/fix_ffmpeg_dependencies.sh /opt/ffmpeg && \
+    cd / && rm -rf /tmp/ffmpeg.tar.gz /tmp/FFmpeg-${FFMPEG_VERSION} /tmp/nv-codec-headers
 
 RUN mkdir -p /tmp/qt-build && \
     cd /tmp/qt-build && \
@@ -116,6 +144,9 @@ RUN mkdir -p /tmp/qt-build && \
         -DFEATURE_wayland_client=ON \
         -DFEATURE_wayland_server=OFF \
         -DFEATURE_ffmpeg=ON \
+        # Use the FFmpeg built above and install its libs alongside Qt's
+        -DFFMPEG_DIR=/opt/ffmpeg \
+        -DQT_DEPLOY_FFMPEG=ON \
         -DFEATURE_pulseaudio=ON \
         -DFEATURE_gstreamer=OFF \
         -DFEATURE_cups=ON \

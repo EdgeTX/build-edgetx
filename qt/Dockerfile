@@ -75,7 +75,7 @@ RUN apt-get update && \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Download Qt source as a separate layer so it can be cached independently
-RUN wget -q https://download.qt.io/official_releases/qt/6.9/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz \
+RUN wget -q https://download.qt.io/archive/qt/6.9/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz \
         -O /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz && \
     tar -xf /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz -C /tmp && \
     rm /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz

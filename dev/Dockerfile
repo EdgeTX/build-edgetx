@@ -53,6 +53,8 @@ RUN apt-get update && \
         file \
         python3-dev \
         gawk \
+        # For generating sim_string_list.h from string_list.h
+        m4 \
         # For font generation and cfn sorting
         nodejs \
         locales \
@@ -99,6 +101,7 @@ RUN locale-gen \
         pt_PT.UTF-8 \
         ru_RU.UTF-8 \
         sv_SE.UTF-8 \
+        sk_SK.UTF-8 \
         zh_TW.UTF-8 \
         uk_UA.UTF-8
 
@@ -181,6 +184,11 @@ FROM base-${TARGETARCH} AS final
 ARG GCC_ARM_VERSION
 ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi/bin/:${PATH}
 ENV ASAN_OPTIONS="detect_leaks=0"
+
+# Install just - runs the Justfile codegen recipes (see edgetx/Justfile)
+ARG JUST_VERSION=1.57.0
+RUN wget --quiet -O - https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${GCC_ARM_ARCH}-unknown-linux-musl.tar.gz \
+    | tar -xz -C /usr/local/bin just
 
 VOLUME ["/src"]
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

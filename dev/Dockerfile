@@ -186,7 +186,7 @@ ENV PATH=/opt/arm-gnu-toolchain-${GCC_ARM_VERSION}-${GCC_ARM_ARCH}-arm-none-eabi
 ENV ASAN_OPTIONS="detect_leaks=0"
 
 # Install just - runs the Justfile codegen recipes (see edgetx/Justfile)
-ARG JUST_VERSION=1.57.0
+ARG JUST_VERSION=1.59.0
 RUN wget --quiet -O - https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${GCC_ARM_ARCH}-unknown-linux-musl.tar.gz \
     | tar -xz -C /usr/local/bin just
 

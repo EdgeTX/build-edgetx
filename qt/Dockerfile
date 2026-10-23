@@ -6,7 +6,7 @@ ARG QT_MD5=d8fab224d072df8ffa09f99f6245e446
 ARG NV_CODEC_TAG=n11.1.5.4
 ARG NV_CODEC_COMMIT=85f332a190555b56a1d5d4c070a076c871c0dcea
 
-FROM ubuntu:${OS_CODENAME}
+FROM ubuntu:${OS_CODENAME} AS build
 
 ARG OS_CODENAME
 ARG QT_VERSION
@@ -153,13 +153,12 @@ RUN mkdir -p /tmp/qt-build && \
         -DFEATURE_printer=ON && \
     cmake --build . --parallel $(nproc) && \
     cmake --install . && \
+    # QT_DEPLOY_FFMPEG should have installed the FFmpeg libs next to Qt's
+    ls /opt/qt/${QT_VERSION}/gcc_64/lib/libavcodec.so.* && \
     rm -rf /tmp/qt-build /tmp/qt-everywhere-src-${QT_VERSION}
 
-ENV QT_INSTALL_DIR=/opt/qt
-ENV QT_BASE_DIR=${QT_INSTALL_DIR}/${QT_VERSION}/gcc_64
-ENV PATH=${QT_BASE_DIR}/bin:$PATH
-ENV QT_PLUGIN_PATH=${QT_BASE_DIR}/plugins
-ENV QML_IMPORT_PATH=${QT_BASE_DIR}/qml
-ENV QML2_IMPORT_PATH=${QT_BASE_DIR}/qml
-ENV LD_LIBRARY_PATH=${QT_BASE_DIR}/lib
-ENV PKG_CONFIG_PATH=${QT_BASE_DIR}/lib/pkgconfig
+# Only the Qt install is published. Consumers copy it with
+# COPY --from=<this image> /opt/qt /opt/qt, so the Qt source, FFmpeg build and
+# -dev packages from the build stage are left behind.
+FROM scratch
+COPY --from=build /opt/qt /opt/qt

@@ -1,14 +1,13 @@
 ARG OS_CODENAME=jammy
 ARG QT_VERSION=6.9.3
-# Qt only publishes MD5 sums; this SHA-256 was computed from a tarball verified
-# against https://download.qt.io/archive/qt/6.9/6.9.3/single/md5sums.txt
-ARG QT_SHA256=59d4fbf50d2524a9082f85d565f0197316cde89c26e97cfc6c157cb255b7ea18
+# From https://download.qt.io/archive/qt/<major.minor>/<version>/single/md5sums.txt
+ARG QT_MD5=d8fab224d072df8ffa09f99f6245e446
 
 FROM ubuntu:${OS_CODENAME}
 
 ARG OS_CODENAME
 ARG QT_VERSION
-ARG QT_SHA256
+ARG QT_MD5
 ARG DEBIAN_FRONTEND=noninteractive
 
 ENV LANG=C.UTF-8
@@ -87,7 +86,7 @@ RUN apt-get update && \
 # Download Qt source as a separate layer so it can be cached independently
 RUN wget -q https://download.qt.io/archive/qt/${QT_VERSION%.*}/${QT_VERSION}/single/qt-everywhere-src-${QT_VERSION}.tar.xz \
         -O /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz && \
-    echo "${QT_SHA256}  /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz" | sha256sum -c - && \
+    echo "${QT_MD5}  /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz" | md5sum -c - && \
     tar -xf /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz -C /tmp && \
     rm /tmp/qt-everywhere-src-${QT_VERSION}.tar.xz
 

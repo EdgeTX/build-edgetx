@@ -129,7 +129,25 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Separate SDL2 build stage - gets cached unless SDL2 source changes
 FROM base AS sdl2-builder
-ARG SDL2_TAG=release-2.32.4
+# Keep in step with the SDL2 version used for Windows Companion builds
+ARG SDL2_TAG=release-2.32.8
+# Headers for SDL's audio/video/input backends. SDL dlopen()s these at runtime,
+# so only the build stage needs the -dev packages.
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends \
+        libasound2-dev \
+        libpulse-dev \
+        libpipewire-0.3-dev \
+        libxcursor-dev \
+        libxss-dev \
+        libwayland-dev \
+        libxkbcommon-dev \
+        libegl1-mesa-dev \
+        libdrm-dev \
+        libgbm-dev \
+        libudev-dev \
+        libdbus-1-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TAG} && \
     cd SDL && \
     mkdir build && \
@@ -137,6 +155,12 @@ RUN git clone https://github.com/libsdl-org/SDL.git --depth 1 --branch ${SDL2_TA
     ../configure --disable-static --enable-shared && \
     make -j$(nproc) && \
     make install DESTDIR=/sdl2-install && \
+    # Fail the build if a backend Companion/simulator relies on was not detected
+    for define in SDL_AUDIO_DRIVER_PULSEAUDIO SDL_AUDIO_DRIVER_PIPEWIRE SDL_AUDIO_DRIVER_ALSA \
+                  SDL_VIDEO_DRIVER_X11 SDL_VIDEO_DRIVER_WAYLAND HAVE_LIBUDEV_H; do \
+        grep -q "#define ${define} 1" /sdl2-install/usr/local/include/SDL2/SDL_config.h || \
+            { echo "SDL2 built without ${define}"; exit 1; }; \
+    done && \
     # Clean up build artifacts to reduce layer size
     cd ../.. && rm -rf SDL
 

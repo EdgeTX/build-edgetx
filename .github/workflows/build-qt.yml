@@ -18,14 +18,20 @@ on:
       - 'qt/Dockerfile'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-qt:
     strategy:
       matrix:
         include:
           - platform: linux/amd64
+            arch: amd64
             runs-on: ubuntu-24.04
           - platform: linux/arm64
+            arch: arm64
             runs-on: ubuntu-24.04-arm
     runs-on: ${{ matrix.runs-on }}
     steps:
@@ -56,8 +62,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           outputs: type=image,name=${{ steps.image.outputs.name }},push-by-digest=true,name-canonical=true,push=true
           build-args: QT_VERSION=${{ env.QT_VERSION }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=qt-${{ matrix.arch }}
+          cache-to: type=gha,scope=qt-${{ matrix.arch }},mode=max
 
       - name: Export digest
         run: |
@@ -68,7 +74,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v7
         with:
-          name: digests-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+          name: digests-${{ matrix.arch }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -101,9 +107,7 @@ jobs:
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=qt-${{ env.QT_VERSION }}
+            type=raw,value=qt-${{ env.QT_VERSION }},enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry

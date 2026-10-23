@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set image name
         id: image
@@ -38,10 +38,10 @@ jobs:
           echo "qt_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-qt" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           registry: ghcr.io
@@ -51,7 +51,7 @@ jobs:
       - name: Build and Push edgetx-dev
         id: build
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: dev/
           file: dev/Dockerfile
@@ -65,7 +65,7 @@ jobs:
 
       - name: Build edgetx-dev (no push for fork PR)
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: dev/
           file: dev/Dockerfile
@@ -86,7 +86,7 @@ jobs:
 
       - name: Upload digest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: digests-dev-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           path: /tmp/digests/*
@@ -104,18 +104,18 @@ jobs:
           echo "dev_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-dev" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: digests-dev-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ steps.image.outputs.dev_image }}
@@ -127,7 +127,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -161,7 +161,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set image name
         id: image
@@ -169,10 +169,10 @@ jobs:
           echo "builder_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-builder" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           registry: ghcr.io
@@ -182,7 +182,7 @@ jobs:
       - name: Build and Push edgetx-builder
         id: build
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: builder/
           file: builder/Dockerfile
@@ -193,7 +193,7 @@ jobs:
 
       - name: Build edgetx-builder (no push for fork PR)
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: builder/
           file: builder/Dockerfile
@@ -211,7 +211,7 @@ jobs:
 
       - name: Upload digest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: digests-builder-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
           path: /tmp/digests/*
@@ -229,18 +229,18 @@ jobs:
           echo "builder_image=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/edgetx-builder" >> "$GITHUB_OUTPUT"
 
       - name: Download digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: /tmp/digests
           pattern: digests-builder-*
           merge-multiple: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=${{ steps.image.outputs.builder_image }}
@@ -252,7 +252,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -279,14 +279,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             name=ghcr.io/${{ github.repository_owner }}/edgetx-wasi
@@ -298,7 +298,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         with:
           registry: ghcr.io
@@ -306,7 +306,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push edgetx-wasi
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: wasi/
           file: wasi/Dockerfile

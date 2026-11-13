@@ -93,6 +93,7 @@ RUN apt-get update && \
 
 # Generate locales in separate layer (rarely changes)
 RUN locale-gen \
+        ar_SA.UTF-8 \
         zh_CN.UTF-8 \
         cs_CZ.UTF-8 \
         da_DK.UTF-8 \
